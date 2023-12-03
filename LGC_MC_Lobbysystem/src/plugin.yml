@@ -1,0 +1,6 @@
+version: 1.0.0.0-SNAPSHOT
+author: ChrisWille2856
+name: LotusGamingSystem
+main: eu.lotusgc.mc.main.Main
+
+commands:
