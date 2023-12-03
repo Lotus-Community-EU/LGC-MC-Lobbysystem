@@ -14,7 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import eu.lotusgc.mc.ext.LotusPlayer;
 import eu.lotusgc.mc.misc.MySQL;
 
 public class JoinEvent implements Listener{
