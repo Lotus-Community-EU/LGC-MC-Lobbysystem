@@ -27,13 +27,14 @@ public class JoinEvent implements Listener{
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-		Player bPlayer = event.getPlayer();
+		Player player = event.getPlayer();
 		
-		if(existPlayer(bPlayer.getUniqueId())) {
-			updateOnlineStatus(bPlayer.getUniqueId(), true);
+		if(existPlayer(player.getUniqueId())) {
+			updateOnlineStatus(player.getUniqueId(), true);
 		}else {
 			Set<Integer> existingIDs = getExistingIDs();
-			addPlayerToDB(bPlayer, existingIDs);
+			addPlayerToDB(player, existingIDs);
+			updateOnlineStatus(player.getUniqueId(), true);
 		}
 		
 		event.setJoinMessage(null);
@@ -59,7 +60,14 @@ public class JoinEvent implements Listener{
 	
 	//update the online status (true for online, false for offline)
 	private void updateOnlineStatus(UUID uuid, boolean status) {
-		
+		try {
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("UPDATE mc_users SET isOnline = ? WHERE mcuuid = ?");
+			ps.setBoolean(1, status);
+			ps.setString(2, uuid.toString());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	//retrieve all IDs which are currently given out to players
