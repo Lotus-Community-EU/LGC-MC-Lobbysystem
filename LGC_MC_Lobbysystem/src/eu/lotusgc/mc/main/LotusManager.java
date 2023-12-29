@@ -4,10 +4,19 @@ import java.io.File;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.PluginManager;
 
+import eu.lotusgc.mc.event.JoinEvent;
+import eu.lotusgc.mc.event.LeaveEvent;
+import eu.lotusgc.mc.event.PasswordSystem;
+import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.misc.MySQL;
 
 public class LotusManager {
+	
+	public static File mainFolder = new File("plugins/LotusGaming");
+	public static File mainConfig = new File("plugins/LotusGaming/config.yml");
+	public static File propsConfig = new File("plugins/LotusGaming/propertiesBackup.yml");
 	
 	
 	//will be loaded as first upon plugin loading!
@@ -15,9 +24,7 @@ public class LotusManager {
 		long current = System.currentTimeMillis();
 		
 		//Configs
-		File mainFolder = new File("plugins/LotusGaming");
-		File mainConfig = new File("plugins/LotusGaming/config.yml");
-		File propsConfig = new File("plugins/LotusGaming/propertiesBackup.yml");
+		
 		
 		if(!mainFolder.exists()) mainFolder.mkdirs();
 		if(!mainConfig.exists()) try { mainConfig.createNewFile(); } catch (Exception ex) { };
@@ -44,6 +51,12 @@ public class LotusManager {
 	public void mainInit() {
 		long current = System.currentTimeMillis();
 		
+		Main.main.getCommand("unlock").setExecutor(new PasswordSystem());
+		
+		PluginManager pm = Bukkit.getPluginManager();
+		pm.registerEvents(new LeaveEvent(), Main.main);
+		pm.registerEvents(new JoinEvent(), Main.main);
+		pm.registerEvents(new PasswordSystem(), Main.main);
 		
 		Bukkit.getConsoleSender().sendMessage("§aMain-Initialisation took §6" + (System.currentTimeMillis() - current) + "§ams");
 	}
@@ -52,6 +65,10 @@ public class LotusManager {
 	public void postInit() {
 		long current = System.currentTimeMillis();
 		
+		LotusController lc = new LotusController();
+		lc.initLanguageSystem();
+		lc.initPlayerLanguages();
+		lc.initPrefixSystem();
 		
 		Bukkit.getConsoleSender().sendMessage("§aPost-Initialisation took §6" + (System.currentTimeMillis() - current) + "§ams");
 	}
