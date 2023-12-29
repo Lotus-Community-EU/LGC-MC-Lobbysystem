@@ -98,13 +98,14 @@ public class JoinEvent implements Listener{
 		}while (knownIDs.contains(newID));
 		
 		try {
-			PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT INTO mc_users SET mcuuid, lgcid, name, firstJoin, currentLastServer, isOnline VALUES ?, ?, ?, ?, ?, ?");
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT INTO mc_users SET mcuuid, lgcid, name, firstJoin, currentLastServer, isOnline, passSalt VALUES ?, ?, ?, ?, ?, ?, ?");
 			ps.setString(1, player.getUniqueId().toString());
 			ps.setInt(2, newID);
 			ps.setString(3, player.getName());
 			ps.setLong(4, System.currentTimeMillis());
 			ps.setString(5, "Lobby");
 			ps.setBoolean(6, true);
+			ps.setString(7, getRandomSalt(8));
 			ps.executeUpdate();
 			Bukkit.getConsoleSender().sendMessage("§aPlayer §6" + player.getName() + " §ahas been assigned the ID §6" + newID);
 		} catch (SQLException e) {
@@ -121,6 +122,18 @@ public class JoinEvent implements Listener{
 			number = r.nextInt(max);
 		}
 		return number;
+	}
+	
+	//generates a random Salt for the password system, which is mandatory for being staff, however optional to use for users. Alike 2FA
+	private String getRandomSalt(int length) {
+		String allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz!?+-=*#:/&";
+		
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < length; i++) {
+			int index = (int) (allowedChars.length() * Math.random());
+			sb.append(allowedChars.charAt(index));
+		}
+		return sb.toString();
 	}
 
 }
