@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import eu.lotusgc.mc.main.Main;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.Prefix;
 import net.md_5.bungee.api.ChatColor;
@@ -82,7 +83,7 @@ public class LotusController {
 			}
 			rs.close();
 			ps.close();
-			Bukkit.getConsoleSender().sendMessage("Initialised " + count + " users for the language system.");
+			Main.logger.info("Initialised " + count + " users for the language system. | Source: LotusController#initPlayerLanguages();");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -135,6 +136,7 @@ public class LotusController {
 			while(rs.next()) {
 				if(rs.getString("type").equalsIgnoreCase("UseSeason")) {
 					useSeasonalPrefix = translateToBool(rs.getString("prefix"));
+					Main.logger.info("Using Seasonal Prefix | Source: LotusController#initPrefixSystem()");
 					Bukkit.getConsoleSender().sendMessage("Using Seasonal Prefix!");
 				}
 				prefix.put(rs.getString("type"), rs.getString("prefix").replace('&', '§'));

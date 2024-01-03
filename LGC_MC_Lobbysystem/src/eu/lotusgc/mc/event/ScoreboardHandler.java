@@ -16,6 +16,7 @@ import org.bukkit.scoreboard.Team.Option;
 import org.bukkit.scoreboard.Team.OptionStatus;
 
 import eu.lotusgc.mc.ext.LotusController;
+import eu.lotusgc.mc.main.Main;
 import eu.lotusgc.mc.misc.MySQL;
 
 public class ScoreboardHandler {
@@ -47,12 +48,15 @@ public class ScoreboardHandler {
 			chatHM.clear();
 			roleHM.clear();
 			sbHM.clear();
+			int count = 0;
 			while(rs.next()) {
+				count++;
 				tabHM.put(rs.getString("ingame-id"), rs.getString("colour") + rs.getString("short"));
 				chatHM.put(rs.getString("ingame-id"), rs.getString("colour") + rs.getString("name"));
 				roleHM.put(rs.getString("ingame-id"), rs.getString("priority"));
 				sbHM.put(rs.getString("ingame-id"), rs.getString("name"));
 			}
+			Main.logger.info("Downloaded " + count + " roles for the Prefix System. | Source: ScoreboardHandler#initRoles();");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
