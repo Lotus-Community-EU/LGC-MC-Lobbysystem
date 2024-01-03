@@ -4,3 +4,6 @@ name: LotusGamingSystem
 main: eu.lotusgc.mc.main.Main
 
 commands:
+    unlock:
+    build:
+    

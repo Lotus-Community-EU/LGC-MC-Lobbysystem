@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 
+import eu.lotusgc.mc.command.BuildCMD;
 import eu.lotusgc.mc.event.JoinEvent;
 import eu.lotusgc.mc.event.LeaveEvent;
 import eu.lotusgc.mc.event.PasswordSystem;
@@ -52,11 +53,13 @@ public class LotusManager {
 		long current = System.currentTimeMillis();
 		
 		Main.main.getCommand("unlock").setExecutor(new PasswordSystem());
+		Main.main.getCommand("build").setExecutor(new BuildCMD());
 		
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new LeaveEvent(), Main.main);
 		pm.registerEvents(new JoinEvent(), Main.main);
 		pm.registerEvents(new PasswordSystem(), Main.main);
+		pm.registerEvents(new BuildCMD(), Main.main);
 		
 		Bukkit.getConsoleSender().sendMessage("§aMain-Initialisation took §6" + (System.currentTimeMillis() - current) + "§ams");
 	}
