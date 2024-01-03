@@ -9,15 +9,22 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Criteria;
+import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.scoreboard.Team.Option;
 import org.bukkit.scoreboard.Team.OptionStatus;
 
+import eu.lotusgc.mc.command.BuildCMD;
 import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.main.Main;
+import eu.lotusgc.mc.misc.CountType;
 import eu.lotusgc.mc.misc.MySQL;
+import eu.lotusgc.mc.misc.Prefix;
+import net.luckperms.api.model.group.GroupManager;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.model.user.UserManager;
 
 public class ScoreboardHandler {
 	
@@ -26,10 +33,51 @@ public class ScoreboardHandler {
 	private static HashMap<String, String> roleHM = new HashMap<>(); //HashMap for Team Priority (Sorted)
 	private static HashMap<String, String> sbHM = new HashMap<>(); //HashMap for Sideboard (Like Chat, just with no additional chars)
 	
+	private static int sbSwitch = 0;
 	
-	public static void setScoreboard(Player player) {
+	public void setScoreboard(Player player) {
 		Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
 		Objective o = sb.registerNewObjective("aaa", Criteria.DUMMY, "LGCINFOBOARD");
+		LotusController lc = new LotusController();
+		int currentUsersNetwork = lc.getPlayers("BungeeCord", CountType.CURRENT_PLAYERS);
+		int currentUsersLocal = Bukkit.getOnlinePlayers().size();
+		int maxUsers = lc.getPlayers("BungeeCord", CountType.MAX_ALL);
+		String sbPrefix = lc.getPrefix(Prefix.SCOREBOARD);
+		
+		o.setDisplaySlot(DisplaySlot.SIDEBAR);
+		if(BuildCMD.hasPlayer(player)) {
+			
+		}else {
+			o.setDisplayName(sbPrefix);
+			if(sbSwitch >= 0 && sbSwitch <= 2) {
+				//money
+				o.getScore("moni").setScore(2);
+				o.getScore("cash").setScore(1);
+				o.getScore("bank").setScore(0);
+			}else if(sbSwitch >= 3 && sbSwitch <= 5) {
+				//role
+				o.getScore("role").setScore(1);
+				o.getScore(retGroup(player)).setScore(0);
+			}else if(sbSwitch >= 6 && sbSwitch <= 8) {
+				//playerinfo
+				o.getScore("id").setScore(3);
+				o.getScore("0000").setScore(2);
+				o.getScore("Team").setScore(1);
+				o.getScore("mothersuckers").setScore(0);
+			}else if(sbSwitch >= 9 && sbSwitch <= 11) {
+				//serverinfo
+				o.getScore("Servers").setScore(6);
+				o.getScore("creative").setScore(5);
+				o.getScore("survival").setScore(4);
+				o.getScore("farm").setScore(3);
+				o.getScore("skyblock").setScore(2);
+				o.getScore("creativehx").setScore(1);
+				o.getScore("survivalhx").setScore(0);
+			}
+		}
+		player.setScoreboard(sb);
+		
+		//Teams will be done later, functionality is now more important (hence no real getters for the sb yet)
 	}
 	
 	public Team getTeam(Scoreboard scoreboard, String role, ChatColor chatcolor) {
@@ -38,6 +86,16 @@ public class ScoreboardHandler {
 		team.setColor(chatcolor);
 		team.setOption(Option.COLLISION_RULE, OptionStatus.NEVER); //TBD for removal if issues arise.
 		return null;
+	}
+	
+	private String retGroup(Player player) {
+		String group = "";
+		UserManager um = Main.luckPerms.getUserManager();
+		User user = um.getUser(player.getName());
+		switch(user.getPrimaryGroup()) {
+		default: group = user.getPrimaryGroup(); break;
+		}
+		return group;
 	}
 	
 	public void initRoles() {

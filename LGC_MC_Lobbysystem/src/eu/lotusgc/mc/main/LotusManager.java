@@ -12,6 +12,7 @@ import eu.lotusgc.mc.event.LeaveEvent;
 import eu.lotusgc.mc.event.PasswordSystem;
 import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.misc.MySQL;
+import net.luckperms.api.LuckPerms;
 
 public class LotusManager {
 	
@@ -72,6 +73,8 @@ public class LotusManager {
 		lc.initLanguageSystem();
 		lc.initPlayerLanguages();
 		lc.initPrefixSystem();
+		
+		Main.luckPerms = (LuckPerms) Bukkit.getServer().getServicesManager().load(LuckPerms.class);
 		
 		Bukkit.getConsoleSender().sendMessage("§aPost-Initialisation took §6" + (System.currentTimeMillis() - current) + "§ams");
 	}
