@@ -42,7 +42,7 @@ public class BuildCMD implements CommandExecutor, Listener{
 							allowedPlayers.add(player2);
 						}
 					}else {
-						lc.sendMessageReady(player, "global.noPermission");
+						lc.noPerm(player, "lgc.build.others");
 					}
 				}else {
 					lc.sendMessageReady(player, "global.playerOffline");
@@ -57,7 +57,7 @@ public class BuildCMD implements CommandExecutor, Listener{
 						lc.sendMessageReady(player, "cmd.build.self.add");
 					}
 				}else {
-					lc.sendMessageReady(player, "global.noPermission");
+					lc.noPerm(player, "lgc.build.self");
 				}
 			}
 		}else {
