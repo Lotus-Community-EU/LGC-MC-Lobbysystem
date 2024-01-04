@@ -110,6 +110,11 @@ public class LotusController {
 		return defaultLanguage;
 	}
 	
+	//This method is just for one string, the NoPerm one
+	public void noPerm(Player player, String lackingPermissionNode) {
+		player.sendMessage(getPrefix(Prefix.System) + sendMessageToFormat(player, "global.noPermission").replace("%permissionNode%", lackingPermissionNode));
+	}
+	
 	//This method returns the String from the language selected.
 	private String returnString(String language, String path) {
 		if(langMap.containsKey(language)) {
