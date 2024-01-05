@@ -42,7 +42,7 @@ public class ScoreboardHandler implements Listener{
 	private static int sbSwitch = 0;
 	
 	public static void setScoreboard(Player player) {
-		Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
+		Scoreboard sb = Bukkit.getScoreboardManager().getNewScoreboard();
 		Objective o = sb.registerNewObjective("aaa", Criteria.DUMMY, "LGCINFOBOARD");
 		LotusController lc = new LotusController();
 		int currentUsersNetwork = lc.getPlayers("BungeeCord", CountType.CURRENT_PLAYERS);
@@ -75,12 +75,12 @@ public class ScoreboardHandler implements Listener{
 				//serverinfo
 				if(sbSwitch == 11) sbSwitch = 0; //resetting the Switcher to 0 so the views are going back again :)
 				try {
-					PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT displayname,currentPlayers FROM mc_serverstats ORDER BY serverid DESC");
+					PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT displayname,currentPlayers,isHiddenGame FROM mc_serverstats ORDER BY serverid DESC");
 					ResultSet rs = ps.executeQuery();
 					int count = 0;
 					while(rs.next()) {
 						if(!rs.getBoolean("isHiddenGame")) {
-							o.getScore(rs.getString("displayname") + "&7: §f" + rs.getInt("currentPlayers")).setScore(count);
+							o.getScore(rs.getString("displayname") + "§7: §f" + rs.getInt("currentPlayers")).setScore(count);
 						}
 					}
 					o.getScore("Servers").setScore(count + 1);
