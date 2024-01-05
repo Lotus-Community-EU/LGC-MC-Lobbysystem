@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -28,7 +29,6 @@ import eu.lotusgc.mc.main.Main;
 import eu.lotusgc.mc.misc.CountType;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.Prefix;
-import net.luckperms.api.model.group.GroupManager;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
 
@@ -38,6 +38,7 @@ public class ScoreboardHandler implements Listener{
 	private static HashMap<String, String> chatHM = new HashMap<>(); //HashMap for Chat
 	private static HashMap<String, String> roleHM = new HashMap<>(); //HashMap for Team Priority (Sorted)
 	private static HashMap<String, String> sbHM = new HashMap<>(); //HashMap for Sideboard (Like Chat, just with no additional chars)
+	public static HashMap<Player, Long> buildTime = new HashMap<>();
 	
 	private static int sbSwitch = 0;
 	
@@ -52,8 +53,22 @@ public class ScoreboardHandler implements Listener{
 		
 		o.setDisplaySlot(DisplaySlot.SIDEBAR);
 		sbSwitch++;
+		if(sbSwitch == 11) sbSwitch = 0; //resetting the Switcher to 0 so the views are going back again :)
 		if(BuildCMD.hasPlayer(player)) {
-			
+			ItemStack mainHandItem = player.getInventory().getItemInMainHand();
+			ItemStack offHandItem = player.getInventory().getItemInOffHand();
+			o.setDisplayName("§bBuild Statistics");
+			o.getScore(lc.sendMessageToFormat(player, "event.scoreboard.build.usedTime")).setScore(6);
+			o.getScore("§7» §a" + getBuildTime(player)).setScore(5);
+			o.getScore("§0").setScore(4);
+			if(!mainHandItem.getType().toString().equalsIgnoreCase("air")) {
+				o.getScore(lc.sendMessageToFormat(player, "event.scoreboard.build.block") + "§6").setScore(3);
+				o.getScore("§7» §a" + mainHandItem.getType().toString()).setScore(2);
+			}
+			if(!offHandItem.getType().toString().equalsIgnoreCase("air")) {
+				o.getScore(lc.sendMessageToFormat(player, "event.scoreboard.build.block") + "§7").setScore(1);
+				o.getScore("§7» §a" + offHandItem.getType().toString()).setScore(0);
+			}
 		}else {
 			o.setDisplayName(sbPrefix);
 			if(sbSwitch >= 0 && sbSwitch <= 2) {
@@ -73,7 +88,6 @@ public class ScoreboardHandler implements Listener{
 				o.getScore("mothersuckers").setScore(0);
 			}else if(sbSwitch >= 9 && sbSwitch <= 11) {
 				//serverinfo
-				if(sbSwitch == 11) sbSwitch = 0; //resetting the Switcher to 0 so the views are going back again :)
 				try {
 					PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT displayname,currentPlayers,isHiddenGame FROM mc_serverstats ORDER BY serverid DESC");
 					ResultSet rs = ps.executeQuery();
@@ -99,10 +113,22 @@ public class ScoreboardHandler implements Listener{
 		setScoreboard(event.getPlayer());
 	}
 	
-	@EventHandler(priority=EventPriority.HIGH)
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onChat(AsyncPlayerChatEvent event) {
 		String message = event.getMessage().replace("&", "&&");
-		event.setFormat(event.getPlayer() + "§7: " + message);
+		event.setFormat("§a" + event.getPlayer().getName() + "§7: " + message);
+	}
+	
+	private static String getBuildTime(Player player) {
+		if(buildTime.containsKey(player)) {
+			long seconds = (System.currentTimeMillis() / 1000) - (buildTime.get(player));
+			long hours = (seconds % (24* 3600)) / 3600; 
+			long minutes = (seconds % 3600) / 60;
+			long remainingSeconds = seconds % 60;
+			return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds);
+		}else {
+			return "§bError!";
+		}
 	}
 	
 	public Team getTeam(Scoreboard scoreboard, String role, ChatColor chatcolor) {
