@@ -8,6 +8,12 @@ import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -26,7 +32,7 @@ import net.luckperms.api.model.group.GroupManager;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
 
-public class ScoreboardHandler {
+public class ScoreboardHandler implements Listener{
 	
 	private static HashMap<String, String> tabHM = new HashMap<>(); //HashMap for Tab
 	private static HashMap<String, String> chatHM = new HashMap<>(); //HashMap for Chat
@@ -35,7 +41,7 @@ public class ScoreboardHandler {
 	
 	private static int sbSwitch = 0;
 	
-	public void setScoreboard(Player player) {
+	public static void setScoreboard(Player player) {
 		Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
 		Objective o = sb.registerNewObjective("aaa", Criteria.DUMMY, "LGCINFOBOARD");
 		LotusController lc = new LotusController();
@@ -45,6 +51,7 @@ public class ScoreboardHandler {
 		String sbPrefix = lc.getPrefix(Prefix.SCOREBOARD);
 		
 		o.setDisplaySlot(DisplaySlot.SIDEBAR);
+		sbSwitch++;
 		if(BuildCMD.hasPlayer(player)) {
 			
 		}else {
@@ -66,18 +73,36 @@ public class ScoreboardHandler {
 				o.getScore("mothersuckers").setScore(0);
 			}else if(sbSwitch >= 9 && sbSwitch <= 11) {
 				//serverinfo
-				o.getScore("Servers").setScore(6);
-				o.getScore("creative").setScore(5);
-				o.getScore("survival").setScore(4);
-				o.getScore("farm").setScore(3);
-				o.getScore("skyblock").setScore(2);
-				o.getScore("creativehx").setScore(1);
-				o.getScore("survivalhx").setScore(0);
+				if(sbSwitch == 11) sbSwitch = 0; //resetting the Switcher to 0 so the views are going back again :)
+				try {
+					PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT displayname,currentPlayers FROM mc_serverstats ORDER BY serverid DESC");
+					ResultSet rs = ps.executeQuery();
+					int count = 0;
+					while(rs.next()) {
+						if(!rs.getBoolean("isHiddenGame")) {
+							o.getScore(rs.getString("displayname") + "&7: §f" + rs.getInt("currentPlayers")).setScore(count);
+						}
+					}
+					o.getScore("Servers").setScore(count + 1);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		player.setScoreboard(sb);
 		
 		//Teams will be done later, functionality is now more important (hence no real getters for the sb yet)
+	}
+	
+	@EventHandler
+	public void onJoin(PlayerJoinEvent event) {
+		setScoreboard(event.getPlayer());
+	}
+	
+	@EventHandler(priority=EventPriority.HIGH)
+	public void onChat(AsyncPlayerChatEvent event) {
+		String message = event.getMessage().replace("&", "&&");
+		event.setFormat(event.getPlayer() + "§7: " + message);
 	}
 	
 	public Team getTeam(Scoreboard scoreboard, String role, ChatColor chatcolor) {
@@ -88,7 +113,7 @@ public class ScoreboardHandler {
 		return null;
 	}
 	
-	private String retGroup(Player player) {
+	private static String retGroup(Player player) {
 		String group = "";
 		UserManager um = Main.luckPerms.getUserManager();
 		User user = um.getUser(player.getName());
@@ -143,6 +168,27 @@ public class ScoreboardHandler {
 		SIDEBOARD,
 		CHAT,
 		TEAM
+	}
+	
+	public static void startScheduler(int delay, int sideboardRefresh, int tabRefresh) {
+		//SYNC TASK - ONLY FOR THE SIDEBOARD
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				for(Player all : Bukkit.getOnlinePlayers()) {
+					setScoreboard(all);
+				}
+			}
+		}.runTaskTimer(Main.main, delay, sideboardRefresh);
+		
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				for(Player all : Bukkit.getOnlinePlayers()) {
+					all.setPlayerListHeaderFooter("HEADER", "FOOTER");
+				}
+			}
+		}.runTaskTimerAsynchronously(Main.main, delay, tabRefresh);
 	}
 
 }

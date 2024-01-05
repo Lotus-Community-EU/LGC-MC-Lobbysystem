@@ -10,6 +10,7 @@ import eu.lotusgc.mc.command.BuildCMD;
 import eu.lotusgc.mc.event.JoinEvent;
 import eu.lotusgc.mc.event.LeaveEvent;
 import eu.lotusgc.mc.event.PasswordSystem;
+import eu.lotusgc.mc.event.ScoreboardHandler;
 import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.misc.MySQL;
 import net.luckperms.api.LuckPerms;
@@ -61,6 +62,7 @@ public class LotusManager {
 		pm.registerEvents(new JoinEvent(), Main.main);
 		pm.registerEvents(new PasswordSystem(), Main.main);
 		pm.registerEvents(new BuildCMD(), Main.main);
+		pm.registerEvents(new ScoreboardHandler(), Main.main);
 		
 		Bukkit.getConsoleSender().sendMessage("§aMain-Initialisation took §6" + (System.currentTimeMillis() - current) + "§ams");
 	}
@@ -73,6 +75,8 @@ public class LotusManager {
 		lc.initLanguageSystem();
 		lc.initPlayerLanguages();
 		lc.initPrefixSystem();
+		
+		ScoreboardHandler.startScheduler(0, 50, 20);
 		
 		Main.luckPerms = (LuckPerms) Bukkit.getServer().getServicesManager().load(LuckPerms.class);
 		
