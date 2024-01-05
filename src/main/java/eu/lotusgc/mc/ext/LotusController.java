@@ -91,6 +91,12 @@ public class LotusController {
 		return playerLanguages.isEmpty();
 	}
 	
+	//only used, when a never-joined player joins the network.
+	public void addPlayerLanguageWhenRegistered(Player player) {
+		playerLanguages.put(player.getUniqueId().toString(), "English");
+		Main.logger.info("Added " + player.getName() + " to the languageMap with default. | Source: LotusController#addPlayerLanguageWhenRegistered(PLAYER);");
+	}
+	
 	//This method is used if no spaceholders needs to be translated additionally.
 	public void sendMessageReady(Player player, String path) {
 		player.sendMessage(getPrefix(Prefix.MAIN) + sendMessageToFormat(player, path));
@@ -120,7 +126,7 @@ public class LotusController {
 		if(langMap.containsKey(language)) {
 			HashMap<String, String> localMap = langMap.get(language);
 			if(localMap.containsKey(path)) {
-				return localMap.get(path);
+				return ChatColor.translateAlternateColorCodes('&', localMap.get(path));
 			}else {
 				return "The path '" + path + "' does not exist!";
 			}
