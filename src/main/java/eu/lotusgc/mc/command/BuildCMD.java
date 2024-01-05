@@ -17,6 +17,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import eu.lotusgc.mc.event.ScoreboardHandler;
 import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.main.Main;
 
@@ -36,10 +37,14 @@ public class BuildCMD implements CommandExecutor, Listener{
 							lc.sendMessageReady(player, "cmd.build.others.self.remove");
 							lc.sendMessageReady(player2, "cmd.build.others.recipient.remove");
 							allowedPlayers.remove(player2);
+							if(ScoreboardHandler.buildTime.containsKey(player2)) {
+								ScoreboardHandler.buildTime.remove(player2);
+							}
 						}else {
 							lc.sendMessageReady(player, "cmd.build.others.self.add");
 							lc.sendMessageReady(player2, "cmd.build.others.recipient.add");
 							allowedPlayers.add(player2);
+							ScoreboardHandler.buildTime.put(player2, System.currentTimeMillis());
 						}
 					}else {
 						lc.noPerm(player, "lgc.build.others");
@@ -52,9 +57,13 @@ public class BuildCMD implements CommandExecutor, Listener{
 					if(allowedPlayers.contains(player)) {
 						allowedPlayers.remove(player);
 						lc.sendMessageReady(player, "cmd.build.self.remove");
+						if(ScoreboardHandler.buildTime.containsKey(player)) {
+							ScoreboardHandler.buildTime.remove(player);
+						}
 					}else {
 						allowedPlayers.add(player);
 						lc.sendMessageReady(player, "cmd.build.self.add");
+						ScoreboardHandler.buildTime.put(player, System.currentTimeMillis());
 					}
 				}else {
 					lc.noPerm(player, "lgc.build.self");
