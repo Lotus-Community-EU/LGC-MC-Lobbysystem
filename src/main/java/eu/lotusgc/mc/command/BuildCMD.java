@@ -15,7 +15,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import eu.lotusgc.mc.event.ScoreboardHandler;
 import eu.lotusgc.mc.ext.LotusController;
@@ -44,7 +44,7 @@ public class BuildCMD implements CommandExecutor, Listener{
 							lc.sendMessageReady(player, "cmd.build.others.self.add");
 							lc.sendMessageReady(player2, "cmd.build.others.recipient.add");
 							allowedPlayers.add(player2);
-							ScoreboardHandler.buildTime.put(player2, System.currentTimeMillis());
+							ScoreboardHandler.buildTime.put(player2, System.currentTimeMillis() / 1000);
 						}
 					}else {
 						lc.noPerm(player, "lgc.build.others");
@@ -63,7 +63,7 @@ public class BuildCMD implements CommandExecutor, Listener{
 					}else {
 						allowedPlayers.add(player);
 						lc.sendMessageReady(player, "cmd.build.self.add");
-						ScoreboardHandler.buildTime.put(player, System.currentTimeMillis());
+						ScoreboardHandler.buildTime.put(player, System.currentTimeMillis() / 1000);
 					}
 				}else {
 					lc.noPerm(player, "lgc.build.self");
@@ -113,7 +113,7 @@ public class BuildCMD implements CommandExecutor, Listener{
 	}
 	
 	@EventHandler
-	public void onJoin(PlayerJoinEvent event) {
+	public void onJoin(PlayerQuitEvent event) {
 		if(allowedPlayers.contains(event.getPlayer())) {
 			allowedPlayers.remove(event.getPlayer());
 		}
