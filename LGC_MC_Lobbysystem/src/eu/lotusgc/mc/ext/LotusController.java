@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import eu.lotusgc.mc.main.Main;
+import eu.lotusgc.mc.misc.CountType;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.Prefix;
 import net.md_5.bungee.api.ChatColor;
@@ -82,7 +84,7 @@ public class LotusController {
 			}
 			rs.close();
 			ps.close();
-			Bukkit.getConsoleSender().sendMessage("Initialised " + count + " users for the language system.");
+			Main.logger.info("Initialised " + count + " users for the language system. | Source: LotusController#initPlayerLanguages();");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -106,6 +108,11 @@ public class LotusController {
 			defaultLanguage = playerLanguages.get(player.getUniqueId().toString());
 		}
 		return defaultLanguage;
+	}
+	
+	//This method is just for one string, the NoPerm one
+	public void noPerm(Player player, String lackingPermissionNode) {
+		player.sendMessage(getPrefix(Prefix.System) + sendMessageToFormat(player, "global.noPermission").replace("%permissionNode%", lackingPermissionNode));
 	}
 	
 	//This method returns the String from the language selected.
@@ -135,6 +142,7 @@ public class LotusController {
 			while(rs.next()) {
 				if(rs.getString("type").equalsIgnoreCase("UseSeason")) {
 					useSeasonalPrefix = translateToBool(rs.getString("prefix"));
+					Main.logger.info("Using Seasonal Prefix | Source: LotusController#initPrefixSystem()");
 					Bukkit.getConsoleSender().sendMessage("Using Seasonal Prefix!");
 				}
 				prefix.put(rs.getString("type"), rs.getString("prefix").replace('&', '§'));
@@ -204,5 +212,21 @@ public class LotusController {
 		Matcher matcher = HEX_PATTERN.matcher(text);
 		while(matcher.find()) { text = text.replace(matcher.group(), ChatColor.of(matcher.group()).toString()); }
 		return text;
+	}
+	
+	//Get the players of a chosen server - returns 0 if server is nonexistent | Type is current, staff or max
+	public int getPlayers(String server, CountType type) {
+		int players = 0;
+		try {
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT * FROM mc_serverstats WHERE servername = ?");
+			ps.setString(1, server);
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return players;
 	}
 }
