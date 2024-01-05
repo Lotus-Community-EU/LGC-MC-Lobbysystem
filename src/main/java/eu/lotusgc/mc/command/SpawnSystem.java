@@ -33,12 +33,14 @@ public class SpawnSystem implements CommandExecutor, Listener{
 					if(mode.equalsIgnoreCase("set")) {
 						if(player.hasPermission("lgc.spawn.admin")) {
 							setSpawn(player.getLocation(), player, true);
+							player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "cmd.spawnadmin.update").replace("%attribute%", "true"));
 						}else {
 							lc.noPerm(player, "lgc.spawn.admin");
 						}
 					}else if(mode.equalsIgnoreCase("remove")) {
 						if(player.hasPermission("lgc.spawn.admin")) {
-							setSpawn(null, null, false);
+							setSpawn(null, player, false);
+							player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "cmd.spawnadmin.update").replace("%attribute%", "false"));
 						}else {
 							lc.noPerm(player, "lgc.spawn.admin");
 						}
@@ -51,8 +53,12 @@ public class SpawnSystem implements CommandExecutor, Listener{
 			}else if(command.getName().equalsIgnoreCase("spawn")) {
 				// SYNTAX /spawn [no args]
 				LotusController lc = new LotusController();
-				player.teleport(getSpawn());
-				lc.sendMessageReady(player, "cmd.spawn");
+				if(shouldSpawnBeUsed()) {
+					player.teleport(getSpawn());
+					lc.sendMessageReady(player, "cmd.spawn.success");
+				}else {
+					lc.sendMessageReady(player, "cmd.spawn.notInUse");
+				}
 			}
 		}else {
 			Bukkit.getConsoleSender().sendMessage(Main.consoleSend);
@@ -62,16 +68,20 @@ public class SpawnSystem implements CommandExecutor, Listener{
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-		if(event.getPlayer().hasPlayedBefore()) {
-			event.getPlayer().teleport(getSpawn());
+		if(shouldSpawnBeUsed()) {
+			if(event.getPlayer().hasPlayedBefore()) {
+				event.getPlayer().teleport(getSpawn());
+			}else {
+				new BukkitRunnable() {
+					
+					@Override
+					public void run() {
+						event.getPlayer().teleport(getSpawn());
+					}
+				}.runTaskLater(Main.main, 10);
+			}
 		}else {
-			new BukkitRunnable() {
-				
-				@Override
-				public void run() {
-					event.getPlayer().teleport(getSpawn());
-				}
-			}.runTaskLater(Main.main, 10);
+			Main.logger.severe(event.getPlayer().getName() + " joined but the spawn is currently not used.");
 		}
 		
 	}
@@ -116,7 +126,7 @@ public class SpawnSystem implements CommandExecutor, Listener{
 		File config = LotusManager.mainConfig;
 		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(config);
 		
-		Location location = new Location(Bukkit.getWorld(cfg.getName()), cfg.getDouble("Spawn.X"), cfg.getDouble("Spawn.Y"), cfg.getDouble("Spawn.Z"), (float)cfg.getDouble("Spawn.YAW"), (float)cfg.getDouble("Spawn.PITCH"));
+		Location location = new Location(Bukkit.getWorld(cfg.getString("Spawn.World")), cfg.getDouble("Spawn.X"), cfg.getDouble("Spawn.Y"), cfg.getDouble("Spawn.Z"), (float)cfg.getDouble("Spawn.YAW"), (float)cfg.getDouble("Spawn.PITCH"));
 		return location;
 	}
 
