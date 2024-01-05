@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.misc.MySQL;
 
 public class JoinEvent implements Listener{
@@ -35,6 +36,8 @@ public class JoinEvent implements Listener{
 			Set<Integer> existingIDs = getExistingIDs();
 			addPlayerToDB(player, existingIDs);
 			updateOnlineStatus(player.getUniqueId(), true);
+			LotusController lc = new LotusController();
+			lc.addPlayerLanguageWhenRegistered(player);
 		}
 		
 		event.setJoinMessage(null);
@@ -98,14 +101,15 @@ public class JoinEvent implements Listener{
 		}while (knownIDs.contains(newID));
 		
 		try {
-			PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT INTO mc_users SET mcuuid, lgcid, name, firstJoin, currentLastServer, isOnline, passSalt VALUES ?, ?, ?, ?, ?, ?, ?");
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT INTO mc_users(mcuuid, lgcid, name, firstJoin, lastJoin, currentLastServer, isOnline, passSalt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 			ps.setString(1, player.getUniqueId().toString());
 			ps.setInt(2, newID);
 			ps.setString(3, player.getName());
 			ps.setLong(4, System.currentTimeMillis());
-			ps.setString(5, "Lobby");
-			ps.setBoolean(6, true);
-			ps.setString(7, getRandomSalt(8));
+			ps.setLong(5, System.currentTimeMillis());
+			ps.setString(6, "Lobby");
+			ps.setBoolean(7, true);
+			ps.setString(8, getRandomSalt(8));
 			ps.executeUpdate();
 			Bukkit.getConsoleSender().sendMessage("§aPlayer §6" + player.getName() + " §ahas been assigned the ID §6" + newID);
 		} catch (SQLException e) {

@@ -7,7 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,6 +30,7 @@ public class LotusController {
 	//Language System
 	private static HashMap<String, HashMap<String, String>> langMap = new HashMap<>();
 	public static HashMap<String, String> playerLanguages = new HashMap<>();
+	private static List<String> availableLanguages = new ArrayList<>();
 	
 	//Prefix System
 	private static HashMap<String, String> prefix = new HashMap<>();
@@ -55,6 +58,7 @@ public class LotusController {
 				HashMap<String, String> map;
 				for(int i = 6; i <= columnCount; i++) {
 					String name = rsmd.getColumnName(i);
+					availableLanguages.add(name);
 					PreparedStatement ps1 = MySQL.getConnection().prepareStatement("SELECT path," + name + ",isGame FROM core_translations");
 					ResultSet rs1 = ps1.executeQuery();
 					map = new HashMap<>();
@@ -71,6 +75,10 @@ public class LotusController {
 			e.printStackTrace();
 		}
 		return langMap.isEmpty();
+	}
+	
+	public List<String> getAvailableLanguages() {
+		return availableLanguages;
 	}
 	
 	public boolean initPlayerLanguages() {
@@ -91,6 +99,12 @@ public class LotusController {
 		return playerLanguages.isEmpty();
 	}
 	
+	//only used, when a never-joined player joins the network.
+	public void addPlayerLanguageWhenRegistered(Player player) {
+		playerLanguages.put(player.getUniqueId().toString(), "English");
+		Main.logger.info("Added " + player.getName() + " to the languageMap with default. | Source: LotusController#addPlayerLanguageWhenRegistered(PLAYER);");
+	}
+	
 	//This method is used if no spaceholders needs to be translated additionally.
 	public void sendMessageReady(Player player, String path) {
 		player.sendMessage(getPrefix(Prefix.MAIN) + sendMessageToFormat(player, path));
@@ -98,7 +112,12 @@ public class LotusController {
 	
 	//This method is used if spaceholders needs to be translated before sending (or if the target is NOT a player).
 	public String sendMessageToFormat(Player player, String path) {
-		return returnString(returnLanguage(player), path);
+		String toReturn = returnString(returnLanguage(player), path);
+		if(toReturn.equalsIgnoreCase("none")) {
+			return returnString("English", path);
+		}else {
+			return toReturn;
+		}
 	}
 	
 	//This method is returns the player's selected language.
@@ -120,7 +139,7 @@ public class LotusController {
 		if(langMap.containsKey(language)) {
 			HashMap<String, String> localMap = langMap.get(language);
 			if(localMap.containsKey(path)) {
-				return localMap.get(path);
+				return ChatColor.translateAlternateColorCodes('&', localMap.get(path));
 			}else {
 				return "The path '" + path + "' does not exist!";
 			}

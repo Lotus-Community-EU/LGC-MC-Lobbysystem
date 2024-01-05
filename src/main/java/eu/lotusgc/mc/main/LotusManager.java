@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 
 import eu.lotusgc.mc.command.BuildCMD;
+import eu.lotusgc.mc.command.SpawnSystem;
 import eu.lotusgc.mc.event.JoinEvent;
 import eu.lotusgc.mc.event.LeaveEvent;
 import eu.lotusgc.mc.event.PasswordSystem;
@@ -56,6 +57,8 @@ public class LotusManager {
 		
 		Main.main.getCommand("unlock").setExecutor(new PasswordSystem());
 		Main.main.getCommand("build").setExecutor(new BuildCMD());
+		Main.main.getCommand("spawn-admin").setExecutor(new SpawnSystem());
+		Main.main.getCommand("spawn").setExecutor(new SpawnSystem());
 		
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new LeaveEvent(), Main.main);
@@ -63,6 +66,7 @@ public class LotusManager {
 		pm.registerEvents(new PasswordSystem(), Main.main);
 		pm.registerEvents(new BuildCMD(), Main.main);
 		pm.registerEvents(new ScoreboardHandler(), Main.main);
+		pm.registerEvents(new SpawnSystem(), Main.main);
 		
 		Bukkit.getConsoleSender().sendMessage("§aMain-Initialisation took §6" + (System.currentTimeMillis() - current) + "§ams");
 	}
