@@ -15,12 +15,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionType;
 
 import eu.lotusgc.mc.main.Main;
-import eu.lotusgc.mc.misc.CountType;
 import eu.lotusgc.mc.misc.MySQL;
+import eu.lotusgc.mc.misc.Playerdata;
 import eu.lotusgc.mc.misc.Prefix;
+import eu.lotusgc.mc.misc.Serverdata;
 import net.md_5.bungee.api.ChatColor;
 
 public class LotusController {
@@ -39,6 +47,14 @@ public class LotusController {
 	//Servername and ServerID
 	private static String servername = "Server";
 	private static String serverid = "0";
+	
+	//misc
+	
+	public static String navigatorTitle = "";
+	public static String extrasTitle = "";
+	public static String languageTitle = "";
+	public static String dailyRewardsTitle = "";
+	public static String cratesTitle = "";
 	
 	// < - - - END OF INSTANCES - - - >
 	
@@ -200,6 +216,49 @@ public class LotusController {
 	}
 	
 	// < - - - END OF PREFIX SYSTEM - - - >
+	// < - - - BEGIN OF THE ITEMSTACKS - - - >
+	
+	public ItemStack defItem(Material material, String displayName, int amount) {
+		ItemStack is = new ItemStack(material, amount);
+		ItemMeta im = is.getItemMeta();
+		im.setDisplayName(displayName);
+		is.setItemMeta(im);
+		return is;
+	}
+	
+	public ItemStack potionItem(int amount, PotionType potionType, String displayName, Color potionColor) {
+		ItemStack is = new ItemStack(Material.POTION, amount);
+		PotionMeta pm = (PotionMeta) is.getItemMeta();
+		pm.setBasePotionType(potionType);
+		pm.setColor(potionColor);
+		pm.setDisplayName(displayName);
+		is.setItemMeta(pm);
+		return is;
+	}
+	
+	public ItemStack enchantedItem(Material material, int amount, String displayName, Enchantment enchantment) {
+		ItemStack is = new ItemStack(material, amount);
+		ItemMeta im = is.getItemMeta();
+		im.setDisplayName(displayName);
+		im.addEnchant(enchantment, 1, true);
+		is.setItemMeta(im);
+		return is;
+	}
+	
+	public ItemStack loreItem(Material material, int amount, String displayname, String... lore) {
+		List<String> loreList = new ArrayList<String>();
+		for(String string : lore) {
+			loreList.add(string);
+		}
+		ItemStack is = new ItemStack(material, amount);
+		ItemMeta im = is.getItemMeta();
+		im.setDisplayName(displayname);
+		im.setLore(loreList);
+		is.setItemMeta(im);
+		return is;
+	}
+	
+	// < - - - EN OF THE ITEMSTACKS - - - >
 	// < - - - BEGIN OF THE MISC UTILS - - - >
 	
 	//load server id and name into cache
@@ -234,18 +293,33 @@ public class LotusController {
 	}
 	
 	//Get the players of a chosen server - returns 0 if server is nonexistent | Type is current, staff or max
-	public int getPlayers(String server, CountType type) {
-		int players = 0;
+	public String getServerData(String server, Serverdata data) {
+		String toReturn = "";
 		try {
-			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT * FROM mc_serverstats WHERE servername = ?");
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT " + data.getColumnName() + " FROM mc_serverstats WHERE servername = ?");
 			ps.setString(1, server);
 			ResultSet rs = ps.executeQuery();
 			if(rs.next()) {
-				
+				toReturn = rs.getString(data.getColumnName());
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return players;
+		return toReturn;
+	}
+	
+	public String getPlayerData(Player player, Playerdata data) {
+		String toReturn = "";
+		try {
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT " + data.getColumnName() + " FROM mc_users WHERE mcuuid = ?");
+			ps.setString(1, player.getUniqueId().toString());
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				toReturn = rs.getString(data.getColumnName());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return toReturn;
 	}
 }

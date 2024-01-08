@@ -26,9 +26,10 @@ import org.bukkit.scoreboard.Team.OptionStatus;
 import eu.lotusgc.mc.command.BuildCMD;
 import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.main.Main;
-import eu.lotusgc.mc.misc.CountType;
 import eu.lotusgc.mc.misc.MySQL;
+import eu.lotusgc.mc.misc.Playerdata;
 import eu.lotusgc.mc.misc.Prefix;
+import eu.lotusgc.mc.misc.Serverdata;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
 
@@ -46,9 +47,9 @@ public class ScoreboardHandler implements Listener{
 		Scoreboard sb = Bukkit.getScoreboardManager().getNewScoreboard();
 		Objective o = sb.registerNewObjective("aaa", Criteria.DUMMY, "LGCINFOBOARD");
 		LotusController lc = new LotusController();
-		int currentUsersNetwork = lc.getPlayers("BungeeCord", CountType.CURRENT_PLAYERS);
+		String currentUsersNetwork = lc.getServerData("BungeeCord", Serverdata.CurrentPlayers);
 		int currentUsersLocal = Bukkit.getOnlinePlayers().size();
-		int maxUsers = lc.getPlayers("BungeeCord", CountType.MAX_ALL);
+		String maxUsers = lc.getServerData("BungeeCord", Serverdata.MaxPlayers);
 		String sbPrefix = lc.getPrefix(Prefix.SCOREBOARD);
 		
 		o.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -73,19 +74,19 @@ public class ScoreboardHandler implements Listener{
 			o.setDisplayName(sbPrefix);
 			if(sbSwitch >= 0 && sbSwitch <= 2) {
 				//money
-				o.getScore("moni").setScore(2);
-				o.getScore("cash").setScore(1);
-				o.getScore("bank").setScore(0);
+				o.getScore("§7Money:").setScore(2);
+				o.getScore("§7» Pocket: §a" + lc.getPlayerData(player, Playerdata.MoneyPocket) + " §6Loti").setScore(1);
+				o.getScore("§7» Bank: §e" + lc.getPlayerData(player, Playerdata.MoneyBank) + " §6Loti").setScore(0);
 			}else if(sbSwitch >= 3 && sbSwitch <= 5) {
 				//role
-				o.getScore("role").setScore(1);
+				o.getScore("§7Role:").setScore(1);
 				o.getScore(retGroup(player)).setScore(0);
 			}else if(sbSwitch >= 6 && sbSwitch <= 8) {
 				//playerinfo
-				o.getScore("id").setScore(3);
-				o.getScore("0000").setScore(2);
-				o.getScore("Team").setScore(1);
-				o.getScore("mothersuckers").setScore(0);
+				o.getScore("§7User ID:").setScore(3);
+				o.getScore("§7» §a" + lc.getPlayerData(player, Playerdata.LotusChangeID)).setScore(2);
+				o.getScore("§7Clan:").setScore(1);
+				o.getScore("§7» §a" + lc.getPlayerData(player, Playerdata.Clan)).setScore(0);
 			}else if(sbSwitch >= 9 && sbSwitch <= 11) {
 				//serverinfo
 				try {
@@ -94,10 +95,13 @@ public class ScoreboardHandler implements Listener{
 					int count = 0;
 					while(rs.next()) {
 						if(!rs.getBoolean("isHiddenGame")) {
+							count++;
 							o.getScore(rs.getString("displayname") + "§7: §f" + rs.getInt("currentPlayers")).setScore(count);
 						}
 					}
-					o.getScore("Servers").setScore(count + 1);
+					count++;
+					o.getScore("§6" + currentUsersLocal + "§7, §a" + currentUsersNetwork + " §7/§c " + maxUsers).setScore(count);
+					o.getScore("§7Servers").setScore(count + 1);
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
