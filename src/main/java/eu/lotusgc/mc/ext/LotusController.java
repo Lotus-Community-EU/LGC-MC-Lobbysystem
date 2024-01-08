@@ -26,6 +26,7 @@ import org.bukkit.potion.PotionType;
 
 import eu.lotusgc.mc.main.Main;
 import eu.lotusgc.mc.misc.MySQL;
+import eu.lotusgc.mc.misc.Playerdata;
 import eu.lotusgc.mc.misc.Prefix;
 import eu.lotusgc.mc.misc.Serverdata;
 import net.md_5.bungee.api.ChatColor;
@@ -46,6 +47,14 @@ public class LotusController {
 	//Servername and ServerID
 	private static String servername = "Server";
 	private static String serverid = "0";
+	
+	//misc
+	
+	public static String navigatorTitle = "";
+	public static String extrasTitle = "";
+	public static String languageTitle = "";
+	public static String dailyRewardsTitle = "";
+	public static String cratesTitle = "";
 	
 	// < - - - END OF INSTANCES - - - >
 	
@@ -287,8 +296,23 @@ public class LotusController {
 	public String getServerData(String server, Serverdata data) {
 		String toReturn = "";
 		try {
-			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT " + data.getColumnName() + " FROM mc_serverstats WHERE server = ?");
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT " + data.getColumnName() + " FROM mc_serverstats WHERE servername = ?");
 			ps.setString(1, server);
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				toReturn = rs.getString(data.getColumnName());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return toReturn;
+	}
+	
+	public String getPlayerData(Player player, Playerdata data) {
+		String toReturn = "";
+		try {
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT " + data.getColumnName() + " FROM mc_users WHERE mcuuid = ?");
+			ps.setString(1, player.getUniqueId().toString());
 			ResultSet rs = ps.executeQuery();
 			if(rs.next()) {
 				toReturn = rs.getString(data.getColumnName());

@@ -29,16 +29,21 @@ public class JoinEvent implements Listener{
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
+		LotusController lc = new LotusController();
 		
+		//Handling the ID
 		if(existPlayer(player.getUniqueId())) {
 			updateOnlineStatus(player.getUniqueId(), true);
 		}else {
 			Set<Integer> existingIDs = getExistingIDs();
 			addPlayerToDB(player, existingIDs);
 			updateOnlineStatus(player.getUniqueId(), true);
-			LotusController lc = new LotusController();
 			lc.addPlayerLanguageWhenRegistered(player);
 		}
+		
+		//Setting Items
+		player.getInventory().clear();
+		
 		
 		event.setJoinMessage(null);
 	}
