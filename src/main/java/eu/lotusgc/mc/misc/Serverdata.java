@@ -1,13 +1,23 @@
 package eu.lotusgc.mc.misc;
 
 public enum Serverdata {
-	CurrentPlayers,
-	CurrentStaffs,
-	MaxPlayers,
-	OnlineStatus,
-	LockedStatus,
-	MaintenanceStatus,
-	FancyName,
-	IsHybrid,
-	RequiredJoinlevel;
+	CurrentPlayers("currentPlayers"),
+	CurrentStaffs("currentStaffs"),
+	MaxPlayers("maxPlayers"),
+	OnlineStatus("isOnline"),
+	LockedStatus("isLocked"),
+	MonitoredStatus("isMonitored"),
+	FancyName("displayname"),
+	IsHybrid("isHybrid"),
+	RequiredJoinlevel("req_joinlevel");
+	
+	public String databaseColName;
+	
+	Serverdata(String columnName){
+		this.databaseColName = columnName;
+	}
+	
+	public String getColumnName() {
+		return databaseColName;
+	}
 }
