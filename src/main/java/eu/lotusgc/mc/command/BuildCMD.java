@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,6 +21,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import eu.lotusgc.mc.event.ScoreboardHandler;
 import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.main.Main;
+import eu.lotusgc.mc.misc.HotbarItem;
 
 public class BuildCMD implements CommandExecutor, Listener{
 	
@@ -40,11 +42,15 @@ public class BuildCMD implements CommandExecutor, Listener{
 							if(ScoreboardHandler.buildTime.containsKey(player2)) {
 								ScoreboardHandler.buildTime.remove(player2);
 							}
+							player2.setGameMode(GameMode.SURVIVAL);
+							new HotbarItem().setHotbarItems(player2);
 						}else {
 							lc.sendMessageReady(player, "cmd.build.others.self.add");
 							lc.sendMessageReady(player2, "cmd.build.others.recipient.add");
 							allowedPlayers.add(player2);
 							ScoreboardHandler.buildTime.put(player2, System.currentTimeMillis() / 1000);
+							player2.setGameMode(GameMode.CREATIVE);
+							player2.getInventory().clear();
 						}
 					}else {
 						lc.noPerm(player, "lgc.build.others");
@@ -60,10 +66,14 @@ public class BuildCMD implements CommandExecutor, Listener{
 						if(ScoreboardHandler.buildTime.containsKey(player)) {
 							ScoreboardHandler.buildTime.remove(player);
 						}
+						player.setGameMode(GameMode.SURVIVAL);
+						new HotbarItem().setHotbarItems(player);
 					}else {
 						allowedPlayers.add(player);
 						lc.sendMessageReady(player, "cmd.build.self.add");
 						ScoreboardHandler.buildTime.put(player, System.currentTimeMillis() / 1000);
+						player.setGameMode(GameMode.CREATIVE);
+						player.getInventory().clear();
 					}
 				}else {
 					lc.noPerm(player, "lgc.build.self");
