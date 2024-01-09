@@ -14,6 +14,7 @@ import eu.lotusgc.mc.event.PasswordSystem;
 import eu.lotusgc.mc.event.ScoreboardHandler;
 import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.misc.MySQL;
+import eu.lotusgc.mc.misc.SyncServerdata;
 import net.luckperms.api.LuckPerms;
 
 public class LotusManager {
@@ -79,8 +80,10 @@ public class LotusManager {
 		lc.initLanguageSystem();
 		lc.initPlayerLanguages();
 		lc.initPrefixSystem();
+		lc.loadServerIDName();
 		
 		ScoreboardHandler.startScheduler(0, 50, 20);
+		SyncServerdata.startScheduler();
 		
 		Main.luckPerms = (LuckPerms) Bukkit.getServer().getServicesManager().load(LuckPerms.class);
 		
