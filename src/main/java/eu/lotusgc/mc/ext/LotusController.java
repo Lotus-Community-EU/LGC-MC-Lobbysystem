@@ -28,6 +28,7 @@ import eu.lotusgc.mc.main.Main;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.Playerdata;
 import eu.lotusgc.mc.misc.Prefix;
+import eu.lotusgc.mc.misc.RAMInfo;
 import eu.lotusgc.mc.misc.Serverdata;
 import net.md_5.bungee.api.ChatColor;
 
@@ -319,6 +320,19 @@ public class LotusController {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}
+		return toReturn;
+	}
+	
+	public String getRAMInfo(RAMInfo type) {
+		String toReturn = "";
+		Runtime runtime = Runtime.getRuntime();
+		if(type == RAMInfo.ALLOCATED) {
+			toReturn = runtime.totalMemory() / 1048576L + "";
+		}else if(type == RAMInfo.USING) {
+			toReturn = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L + "";
+		}else if(type == RAMInfo.FREE) {
+			toReturn = runtime.freeMemory() / 1048576L + "";
 		}
 		return toReturn;
 	}
