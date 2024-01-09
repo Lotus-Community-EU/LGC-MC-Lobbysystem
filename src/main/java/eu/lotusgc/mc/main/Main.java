@@ -5,6 +5,8 @@ import java.util.logging.Logger;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import eu.lotusgc.mc.misc.MySQL;
+import eu.lotusgc.mc.misc.SyncServerdata;
 import net.luckperms.api.LuckPerms;
 
 public class Main extends JavaPlugin{
@@ -22,10 +24,13 @@ public class Main extends JavaPlugin{
 		mgr.preInit();
 		mgr.mainInit();
 		mgr.postInit();
+		SyncServerdata.setOnlineStatus(true);
 	}
 	
 	public void onDisable() {
 		main = null;
+		SyncServerdata.setOnlineStatus(false);
+		MySQL.disconnect();
 	}
 
 }
