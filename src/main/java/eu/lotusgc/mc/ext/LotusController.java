@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionType;
 
 import eu.lotusgc.mc.main.Main;
@@ -251,6 +252,47 @@ public class LotusController {
 		return is;
 	}
 	
+	@SuppressWarnings("deprecation")
+	public ItemStack skullItem(int amount, String displayname, String skullOwner) {
+		ItemStack skull = new ItemStack(Material.PLAYER_HEAD, amount);
+		SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+		skullMeta.setOwner(skullOwner);
+		skullMeta.setDisplayName(displayname);
+		skull.setItemMeta(skullMeta);
+		return skull;
+	}
+	
+	public ItemStack naviServerItem(Material material, String servername) {
+		ArrayList<String> lore = new ArrayList<>();
+		ItemStack is = new ItemStack(material, 1);
+		ItemMeta im = is.getItemMeta();
+		HashMap<String, String> map = getServerData(servername);
+		boolean online = translateBoolean(map.get("isOnline"));
+		boolean isMaintenance = translateBoolean(map.get("isMonitored"));
+		boolean isLocked = translateBoolean(map.get("isLocked"));
+		String fancyName = map.get("displayname");
+		int currentPlayers = translateInt(map.get("currentPlayers"));
+		String joinlevel = translateJoinLevel(map.get("req_joinlevel"));
+		if(online) {
+			lore.add("§7Online: §ayes");
+			lore.add("§2" + currentPlayers + " §7Players");
+		}else {
+			lore.add("§7Online: §cno");
+		}
+		lore.add("§7Server Entry Level:");
+		lore.add(joinlevel);
+		if(isMaintenance) {
+			lore.add("§7Monitored: §cyes");
+		}
+		if(isLocked) {
+			lore.add("§7Locked: §cyes");
+		}
+		im.setLore(lore);
+		im.setDisplayName(fancyName);
+		is.setItemMeta(im);
+		return is;
+	}
+	
 	// < - - - EN OF THE ITEMSTACKS - - - >
 	// < - - - BEGIN OF THE MISC UTILS - - - >
 	
@@ -285,12 +327,11 @@ public class LotusController {
 		return text;
 	}
 	
-	//Get the players of a chosen server - returns 0 if server is nonexistent | Type is current, staff or max
-	public String getServerData(String server, Serverdata data) {
+	public String getServerData(String servername, Serverdata data) {
 		String toReturn = "";
 		try {
 			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT " + data.getColumnName() + " FROM mc_serverstats WHERE servername = ?");
-			ps.setString(1, server);
+			ps.setString(1, servername);
 			ResultSet rs = ps.executeQuery();
 			if(rs.next()) {
 				toReturn = rs.getString(data.getColumnName());
@@ -299,6 +340,27 @@ public class LotusController {
 			e.printStackTrace();
 		}
 		return toReturn;
+	}
+	
+	public HashMap<String, String> getServerData(String servername) {
+		HashMap<String, String> hashMap = new HashMap<>();
+		try {
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT * FROM mc_serverstats WHERE servername = ?");
+			ps.setString(1, servername);
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				for(Serverdata data : Serverdata.values()) {
+					hashMap.put(data.getColumnName(), rs.getString(data.getColumnName()));
+				}
+			}else {
+				for(Serverdata data : Serverdata.values()) {
+					hashMap.put(data.getColumnName(), "none");
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return hashMap;
 	}
 	
 	public String getPlayerData(Player player, Playerdata data) {
@@ -316,6 +378,27 @@ public class LotusController {
 		return toReturn;
 	}
 	
+	public HashMap<String, String> getPlayerData(Player player){
+		HashMap<String, String> hashMap = new HashMap<>();
+		try {
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT * FROM mc_users WHERE mcuuid = ?");
+			ps.setString(1, player.getUniqueId().toString());
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				for(Playerdata data : Playerdata.values()) {
+					hashMap.put(data.getColumnName(), rs.getString(data.getColumnName()));
+				}
+			}else {
+				for(Playerdata data : Playerdata.values()) {
+					hashMap.put(data.getColumnName(), "none");
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return hashMap;
+	}
+	
 	public String getRAMInfo(RAMInfo type) {
 		String toReturn = "";
 		Runtime runtime = Runtime.getRuntime();
@@ -327,5 +410,32 @@ public class LotusController {
 			toReturn = runtime.freeMemory() / 1048576L + "";
 		}
 		return toReturn;
+	}
+
+	private boolean translateBoolean(String input) {
+		switch(input) {
+		case "0": return false;
+		case "false": return false;
+		case "1": return true;
+		case "true": return true;
+		default: Main.logger.severe("Error in LotusController#translateBoolean() - expected 0,1,true,false but got " + input); return false;
+		}
+	}
+	
+	private int translateInt(String input) {
+		if(input.matches("^[0-9]+-$")) {
+			return Integer.parseInt(input);
+		}else {
+			return -1;
+		}
+	}
+	
+	private String translateJoinLevel(String input) {
+		switch(input) {
+		case "ALPHA": return "§cAlpha";
+		case "BETA": return "§dBeta";
+		case "EVERYONE": return "§aEveryone";
+		default: Main.logger.severe("Error in LotusController#translateJoinLevel() - expected ALPHA,BETA,EVERYONE but got " + input); return "§aEveryone";
+		}
 	}
 }
