@@ -49,14 +49,6 @@ public class LotusController {
 	private static String servername = "Server";
 	private static String serverid = "0";
 	
-	//misc
-	
-	public static String navigatorTitle = "";
-	public static String extrasTitle = "";
-	public static String languageTitle = "";
-	public static String dailyRewardsTitle = "";
-	public static String cratesTitle = "";
-	
 	// < - - - END OF INSTANCES - - - >
 	
 	/* Server reads out how many columns there are for the language system. 
