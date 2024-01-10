@@ -9,7 +9,8 @@ public enum Serverdata {
 	MonitoredStatus("isMonitored"),
 	FancyName("displayname"),
 	IsHybrid("isHybrid"),
-	RequiredJoinlevel("req_joinlevel");
+	RequiredJoinlevel("req_joinlevel"),
+	ServerPlayerCapacity("playerCapacity");
 	
 	public String databaseColName;
 	
