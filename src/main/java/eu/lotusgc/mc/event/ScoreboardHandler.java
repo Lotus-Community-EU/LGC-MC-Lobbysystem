@@ -26,6 +26,7 @@ import org.bukkit.scoreboard.Team.OptionStatus;
 import eu.lotusgc.mc.command.BuildCMD;
 import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.main.Main;
+import eu.lotusgc.mc.misc.InputType;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.Playerdata;
 import eu.lotusgc.mc.misc.Prefix;
@@ -47,9 +48,9 @@ public class ScoreboardHandler implements Listener{
 		Scoreboard sb = Bukkit.getScoreboardManager().getNewScoreboard();
 		Objective o = sb.registerNewObjective("aaa", Criteria.DUMMY, "LGCINFOBOARD");
 		LotusController lc = new LotusController();
-		String currentUsersNetwork = lc.getServerData("BungeeCord", Serverdata.CurrentPlayers);
+		String currentUsersNetwork = lc.getServerData("BungeeCord", Serverdata.CurrentPlayers, InputType.Servername);
 		int currentUsersLocal = Bukkit.getOnlinePlayers().size();
-		String maxUsers = lc.getServerData("BungeeCord", Serverdata.MaxPlayers);
+		String maxUsers = lc.getServerData("BungeeCord", Serverdata.MaxPlayers, InputType.Servername);
 		String sbPrefix = lc.getPrefix(Prefix.SCOREBOARD);
 		
 		o.setDisplaySlot(DisplaySlot.SIDEBAR);
