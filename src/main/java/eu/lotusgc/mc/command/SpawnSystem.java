@@ -71,10 +71,10 @@ public class SpawnSystem implements CommandExecutor, Listener{
 							lc.noPerm(player, "lgc.spawn.admin");
 						}
 					}else {
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "global.args") + " §7/spawn-admin <set|remove>");
+						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "global.args") + " §7/spawn-admin <setSpawn|setdrew|setcrates|minHeight|maxHeight>");
 					}
 				}else {
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "global.args") + " §7/spawn-admin <set|remove>");
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "global.args") + " §7/spawn-admin <setSpawn|setdrew|setcrates|minHeight|maxHeight>");
 				}
 			}else if(command.getName().equalsIgnoreCase("spawn")) {
 				// SYNTAX /spawn [no args]
