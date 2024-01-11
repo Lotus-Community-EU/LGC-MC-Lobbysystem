@@ -10,7 +10,8 @@ public enum Serverdata {
 	FancyName("displayname"),
 	IsHybrid("isHybrid"),
 	RequiredJoinlevel("req_joinlevel"),
-	ServerPlayerCapacity("playerCapacity");
+	ServerPlayerCapacity("playerCapacity"),
+	BungeeCordKey("bungeeKey");
 	
 	public String databaseColName;
 	

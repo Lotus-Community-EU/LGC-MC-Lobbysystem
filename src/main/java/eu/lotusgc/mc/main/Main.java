@@ -3,6 +3,7 @@ package eu.lotusgc.mc.main;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import eu.lotusgc.mc.misc.MySQL;
@@ -18,6 +19,7 @@ public class Main extends JavaPlugin{
 	
 	public void onEnable() {
 		main = this;
+		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 		logger.setLevel(Level.ALL);
 		LotusManager mgr = new LotusManager();

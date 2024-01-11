@@ -2,6 +2,7 @@ package eu.lotusgc.mc.command;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -27,38 +28,59 @@ public class SpawnSystem implements CommandExecutor, Listener{
 		if(sender instanceof Player player) {
 			if(command.getName().equalsIgnoreCase("spawn-admin")) {
 				LotusController lc = new LotusController();
-				// SYNTAX /spawn-admin <set|remove>
+				// SYNTAX /spawn-admin <setSpawn|setdrew|setcrates|minHeight|maxHeight>
 				if(args.length == 1) {
 					String mode = args[0];
-					if(mode.equalsIgnoreCase("set")) {
+					if(mode.equalsIgnoreCase("setspawn")) {
 						if(player.hasPermission("lgc.spawn.admin")) {
-							setSpawn(player.getLocation(), player, true);
-							player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "cmd.spawnadmin.update").replace("%attribute%", "true"));
+							setSpawn(player.getLocation(), player, "mainSpawn");
+							lc.sendMessageReady(player, "cmd.spawnadmin.update");
 						}else {
 							lc.noPerm(player, "lgc.spawn.admin");
 						}
-					}else if(mode.equalsIgnoreCase("remove")) {
+					}else if(mode.equalsIgnoreCase("setdrew")) {
 						if(player.hasPermission("lgc.spawn.admin")) {
-							setSpawn(null, player, false);
-							player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "cmd.spawnadmin.update").replace("%attribute%", "false"));
+							setSpawn(null, player, "dailyRewards");
+							lc.sendMessageReady(player, "cmd.spawnadmin.update");
+						}else {
+							lc.noPerm(player, "lgc.spawn.admin");
+						}
+					}else if(mode.equalsIgnoreCase("setcrates")) {
+						if(player.hasPermission("lgc.spawn.admin")) {
+							setSpawn(null, player, "crates");
+							lc.sendMessageReady(player, "cmd.spawnadmin.update");
+						}else {
+							lc.noPerm(player, "lgc.spawn.admin");
+						}
+					}else if(mode.equalsIgnoreCase("minHeight")) {
+						if(player.hasPermission("lgc.spawn.admin")) {
+							Location loc = player.getLocation();
+							setHeight(loc.getY(), "min");
+							DecimalFormat df = new DecimalFormat("#");
+							player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "cmd.spawnadmin.height").replace("%mode%", "min").replace("%y%", df.format(loc.getY())));
+						}else {
+							lc.noPerm(player, "lgc.spawn.admin");
+						}
+					}else if(mode.equalsIgnoreCase("maxHeight")) {
+						if(player.hasPermission("lgc.spawn.admin")) {
+							Location loc = player.getLocation();
+							setHeight(loc.getY(), "max");
+							DecimalFormat df = new DecimalFormat("#");
+							player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "cmd.spawnadmin.height").replace("%mode%", "max").replace("%y%", df.format(loc.getY())));
 						}else {
 							lc.noPerm(player, "lgc.spawn.admin");
 						}
 					}else {
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "global.args") + " §7/spawn-admin <set|remove>");
+						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "global.args") + " §7/spawn-admin <setSpawn|setdrew|setcrates|minHeight|maxHeight>");
 					}
 				}else {
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "global.args") + " §7/spawn-admin <set|remove>");
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "global.args") + " §7/spawn-admin <setSpawn|setdrew|setcrates|minHeight|maxHeight>");
 				}
 			}else if(command.getName().equalsIgnoreCase("spawn")) {
 				// SYNTAX /spawn [no args]
 				LotusController lc = new LotusController();
-				if(shouldSpawnBeUsed()) {
-					player.teleport(getSpawn());
-					lc.sendMessageReady(player, "cmd.spawn.success");
-				}else {
-					lc.sendMessageReady(player, "cmd.spawn.notInUse");
-				}
+				player.teleport(getSpawn("mainSpawn"));
+				lc.sendMessageReady(player, "cmd.spawn.success");
 			}
 		}else {
 			Bukkit.getConsoleSender().sendMessage(Main.consoleSend);
@@ -68,65 +90,60 @@ public class SpawnSystem implements CommandExecutor, Listener{
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-		if(shouldSpawnBeUsed()) {
-			if(event.getPlayer().hasPlayedBefore()) {
-				event.getPlayer().teleport(getSpawn());
-			}else {
-				new BukkitRunnable() {
-					
-					@Override
-					public void run() {
-						event.getPlayer().teleport(getSpawn());
-					}
-				}.runTaskLater(Main.main, 10);
-			}
+		if(event.getPlayer().hasPlayedBefore()) {
+			event.getPlayer().teleport(getSpawn("mainSpawn"));
 		}else {
-			Main.logger.severe(event.getPlayer().getName() + " joined but the spawn is currently not used.");
+			new BukkitRunnable() {
+				
+				@Override
+				public void run() {
+					event.getPlayer().teleport(getSpawn("mainSpawn"));
+				}
+			}.runTaskLater(Main.main, 10);
 		}
 		
 	}
 	
-	void setSpawn(Location location, Player player, boolean shouldBeUsed) {
+	void setHeight(double y, String pos) {
 		File config = LotusManager.mainConfig;
 		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(config);
-		
-		if(location != null) {
-			cfg.set("Spawn.World", location.getWorld().getName());
-			cfg.set("Spawn.X", location.getX());
-			cfg.set("Spawn.Y", location.getY());
-			cfg.set("Spawn.Z", location.getZ());
-			cfg.set("Spawn.YAW", location.getYaw());
-			cfg.set("Spawn.PITCH", location.getPitch());
-			cfg.set("Spawn.Timestamp.Set", System.currentTimeMillis());
-		}
-		if(player != null) {
-			cfg.set("Spawn.Setter", player.getUniqueId().toString());
-		}
-		if(!shouldBeUsed) {
-			cfg.set("Spawn.Timestamp.Remove", System.currentTimeMillis());
-			cfg.set("Spawn.isInUse", shouldBeUsed);
-		}else {
-			cfg.set("Spawn.isInUse", shouldBeUsed);
-		}
+		cfg.set("Spawn.height." + pos, y);
 		try {
 			cfg.save(config);
-			Main.logger.info("Spawn has been updated by " + player.getName() + " with the attribute: shouldBeUsed=" + shouldBeUsed);
 		} catch (IOException e) {
 			Main.logger.severe("Attempting to save spawn, but errored: " + e.getMessage());
 		}
 	}
 	
-	boolean shouldSpawnBeUsed() {
-		File config = LotusManager.mainConfig;
-		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(config);
-		return cfg.getBoolean("Spawn.isInUse");
-	}
-	
-	Location getSpawn() {
+	void setSpawn(Location location, Player player, String use) {
 		File config = LotusManager.mainConfig;
 		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(config);
 		
-		Location location = new Location(Bukkit.getWorld(cfg.getString("Spawn.World")), cfg.getDouble("Spawn.X"), cfg.getDouble("Spawn.Y"), cfg.getDouble("Spawn.Z"), (float)cfg.getDouble("Spawn.YAW"), (float)cfg.getDouble("Spawn.PITCH"));
+		if(location != null) {
+			cfg.set("Spawn." + use + ".World", location.getWorld().getName());
+			cfg.set("Spawn." + use + ".X", location.getX());
+			cfg.set("Spawn." + use + ".Y", location.getY());
+			cfg.set("Spawn." + use + ".Z", location.getZ());
+			cfg.set("Spawn." + use + ".YAW", location.getYaw());
+			cfg.set("Spawn." + use + ".PITCH", location.getPitch());
+			cfg.set("Spawn." + use + ".Timestamp.Set", System.currentTimeMillis());
+		}
+		if(player != null) {
+			cfg.set("Spawn." + use + ".Setter", player.getUniqueId().toString());
+		}
+		try {
+			cfg.save(config);
+			Main.logger.info("Spawn has been updated by " + player.getName() + " with the attribute: spawnType=" + use);
+		} catch (IOException e) {
+			Main.logger.severe("Attempting to save spawn, but errored: " + e.getMessage());
+		}
+	}
+	
+	public static Location getSpawn(String use) {
+		File config = LotusManager.mainConfig;
+		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(config);
+		
+		Location location = new Location(Bukkit.getWorld(cfg.getString("Spawn." + use + ".World")), cfg.getDouble("Spawn." + use + ".X"), cfg.getDouble("Spawn." + use + ".Y"), cfg.getDouble("Spawn." + use + ".Z"), (float)cfg.getDouble("Spawn." + use + ".YAW"), (float)cfg.getDouble("Spawn." + use + ".PITCH"));
 		return location;
 	}
 
