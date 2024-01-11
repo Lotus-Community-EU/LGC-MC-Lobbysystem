@@ -252,11 +252,20 @@ public class LotusController {
 		return is;
 	}
 	
-	@SuppressWarnings("deprecation")
+	@Deprecated
 	public ItemStack skullItem(int amount, String displayname, String skullOwner) {
 		ItemStack skull = new ItemStack(Material.PLAYER_HEAD, amount);
 		SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
 		skullMeta.setOwner(skullOwner);
+		skullMeta.setDisplayName(displayname);
+		skull.setItemMeta(skullMeta);
+		return skull;
+	}
+	
+	public ItemStack skullItem(int amount, String displayname, Player skullOwner) {
+		ItemStack skull = new ItemStack(Material.PLAYER_HEAD, amount);
+		SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+		skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(skullOwner.getUniqueId()));
 		skullMeta.setDisplayName(displayname);
 		skull.setItemMeta(skullMeta);
 		return skull;

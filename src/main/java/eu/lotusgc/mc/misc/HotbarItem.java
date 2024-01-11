@@ -22,7 +22,7 @@ public class HotbarItem {
 		player.getInventory().setItem(2, lc.defItem(Material.BOOK, hb_language, 1)); //language
 		player.getInventory().setItem(4, lc.defItem(Material.COMPASS, hb_navigator, 1)); //navigator
 		player.getInventory().setItem(6, lc.defItem(Material.LIME_DYE, hb_hider_all, 1)); //loop thru see player-staff-none
-		player.getInventory().setItem(8, lc.skullItem(1, hb_friends, player.getName()));
+		player.getInventory().setItem(8, lc.skullItem(1, hb_friends, player));
 	}
 
 }
