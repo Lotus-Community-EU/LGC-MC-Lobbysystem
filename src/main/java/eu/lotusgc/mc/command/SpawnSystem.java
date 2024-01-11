@@ -129,7 +129,7 @@ public class SpawnSystem implements CommandExecutor, Listener{
 			cfg.set("Spawn." + use + ".Timestamp.Set", System.currentTimeMillis());
 		}
 		if(player != null) {
-			cfg.set("Spawn.Setter", player.getUniqueId().toString());
+			cfg.set("Spawn." + use + ".Setter", player.getUniqueId().toString());
 		}
 		try {
 			cfg.save(config);
