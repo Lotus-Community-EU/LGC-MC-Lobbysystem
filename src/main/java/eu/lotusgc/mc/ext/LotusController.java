@@ -26,6 +26,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionType;
 
 import eu.lotusgc.mc.main.Main;
+import eu.lotusgc.mc.misc.InputType;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.Playerdata;
 import eu.lotusgc.mc.misc.Prefix;
@@ -336,10 +337,10 @@ public class LotusController {
 		return text;
 	}
 	
-	public String getServerData(String servername, Serverdata data) {
+	public String getServerData(String servername, Serverdata data, InputType type) {
 		String toReturn = "";
 		try {
-			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT " + data.getColumnName() + " FROM mc_serverstats WHERE servername = ?");
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT " + data.getColumnName() + " FROM mc_serverstats WHERE " + type.getColumnName() + " = ?");
 			ps.setString(1, servername);
 			ResultSet rs = ps.executeQuery();
 			if(rs.next()) {
@@ -421,7 +422,7 @@ public class LotusController {
 		return toReturn;
 	}
 
-	private boolean translateBoolean(String input) {
+	public boolean translateBoolean(String input) {
 		switch(input) {
 		case "0": return false;
 		case "false": return false;
@@ -431,7 +432,7 @@ public class LotusController {
 		}
 	}
 	
-	private int translateInt(String input) {
+	public int translateInt(String input) {
 		if(input.matches("^[0-9]+-$")) {
 			return Integer.parseInt(input);
 		}else {
@@ -439,7 +440,7 @@ public class LotusController {
 		}
 	}
 	
-	private String translateJoinLevel(String input) {
+	public String translateJoinLevel(String input) {
 		switch(input) {
 		case "ALPHA": return "§cAlpha";
 		case "BETA": return "§dBeta";
