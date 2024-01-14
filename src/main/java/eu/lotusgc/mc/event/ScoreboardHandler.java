@@ -75,34 +75,35 @@ public class ScoreboardHandler implements Listener{
 			o.setDisplayName(sbPrefix);
 			if(sbSwitch >= 0 && sbSwitch <= 2) {
 				//money
-				o.getScore("§7Money:").setScore(2);
+				o.getScore(lc.sendMessageToFormat(player, "event.scoreboard.money")).setScore(2);
 				o.getScore("§7» Pocket: §a" + lc.getPlayerData(player, Playerdata.MoneyPocket) + " §6Loti").setScore(1);
 				o.getScore("§7» Bank: §e" + lc.getPlayerData(player, Playerdata.MoneyBank) + " §6Loti").setScore(0);
 			}else if(sbSwitch >= 3 && sbSwitch <= 5) {
 				//role
-				o.getScore("§7Role:").setScore(1);
+				o.getScore(lc.sendMessageToFormat(player, "event.scoreboard.role")).setScore(1);
 				o.getScore(retGroup(player)).setScore(0);
 			}else if(sbSwitch >= 6 && sbSwitch <= 8) {
 				//playerinfo
-				o.getScore("§7User ID:").setScore(3);
+				o.getScore(lc.sendMessageToFormat(player, "event.scoreboard.userid")).setScore(3);
 				o.getScore("§7» §a" + lc.getPlayerData(player, Playerdata.LotusChangeID)).setScore(2);
 				o.getScore("§7Clan:").setScore(1);
 				o.getScore("§7» §a" + lc.getPlayerData(player, Playerdata.Clan)).setScore(0);
 			}else if(sbSwitch >= 9 && sbSwitch <= 11) {
 				//serverinfo
 				try {
-					PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT displayname,currentPlayers,isHiddenGame FROM mc_serverstats ORDER BY serverid DESC");
+					PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT displayname,currentPlayers,isHiddenGame,isOnline FROM mc_serverstats ORDER BY serverid DESC");
 					ResultSet rs = ps.executeQuery();
 					int count = 0;
 					while(rs.next()) {
-						if(!rs.getBoolean("isHiddenGame")) {
+						if(!rs.getBoolean("isHiddenGame") || !rs.getBoolean("isOnline")) {
 							count++;
-							o.getScore(rs.getString("displayname") + "§7: §f" + rs.getInt("currentPlayers")).setScore(count);
+							o.getScore("§7» " + rs.getString("displayname") + "§7: §f" + rs.getInt("currentPlayers")).setScore(count);
 						}
 					}
 					count++;
-					o.getScore("§6" + currentUsersLocal + "§7, §a" + currentUsersNetwork + " §7/§c " + maxUsers).setScore(count);
-					o.getScore("§7Servers").setScore(count + 1);
+					o.getScore("  §6" + currentUsersLocal + "§7, §a" + currentUsersNetwork + " §7/§c " + maxUsers).setScore(count);
+					o.getScore("§a§b").setScore(count + 1);
+					o.getScore("§7Servers").setScore(count + 2);
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
