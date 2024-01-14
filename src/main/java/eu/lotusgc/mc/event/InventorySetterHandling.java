@@ -19,6 +19,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 
@@ -235,6 +237,36 @@ public class InventorySetterHandling implements Listener{
 				//Error whilst updating to language %language%
 				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.languageInventory.error").replace("%language%", itemName));
 			}
+		}else if(event.getView().getType() == InventoryType.PLAYER)  {
+			event.setCancelled(true);
+			LotusController lc = new LotusController();
+			String item = event.getCurrentItem().getItemMeta().getDisplayName();
+			String noMoveMsg = lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.playerInventory.cancel").replace("%item%", item);
+			if(item.equalsIgnoreCase(HotbarItem.hb_extras) || item.equalsIgnoreCase(HotbarItem.hb_friends) || 
+					item.equalsIgnoreCase(HotbarItem.hb_hider_all) || item.equalsIgnoreCase(HotbarItem.hb_hider_none) || 
+					item.equalsIgnoreCase(HotbarItem.hb_hider_staff) || item.equalsIgnoreCase(HotbarItem.hb_language) || item.equalsIgnoreCase(HotbarItem.hb_navigator)) {
+				player.sendMessage(noMoveMsg);
+				event.setCancelled(true);
+			}else {
+				event.setCancelled(false);
+			}
+		}else {
+			event.setCancelled(false);
+		}
+	}
+	
+	@EventHandler
+	public void onDrop(PlayerDropItemEvent event) {
+		Player player = event.getPlayer();
+		String item = event.getItemDrop().getItemStack().getItemMeta().getDisplayName();
+		LotusController lc = new LotusController();
+		// You can't drop %item%!
+		String noDropMsg = lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.drop.cancel").replace("%item%", item);
+		if(item.equalsIgnoreCase(HotbarItem.hb_extras) || item.equalsIgnoreCase(HotbarItem.hb_friends) || 
+				item.equalsIgnoreCase(HotbarItem.hb_hider_all) || item.equalsIgnoreCase(HotbarItem.hb_hider_none) || 
+				item.equalsIgnoreCase(HotbarItem.hb_hider_staff) || item.equalsIgnoreCase(HotbarItem.hb_language) || item.equalsIgnoreCase(HotbarItem.hb_navigator)) {
+			player.sendMessage(noDropMsg);
+			event.setCancelled(true);
 		}else {
 			event.setCancelled(false);
 		}
