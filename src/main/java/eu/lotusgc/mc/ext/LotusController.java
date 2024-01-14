@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,23 +65,28 @@ public class LotusController {
 			ResultSet rs = ps.executeQuery();
 			ResultSetMetaData rsmd =  rs.getMetaData();
 			int columnCount = rsmd.getColumnCount();
-			
-			while(rs.next()) {
+			int languageStrings = 0;
+			if(rs.next()) {
 				HashMap<String, String> map;
 				for(int i = 6; i <= columnCount; i++) {
 					String name = rsmd.getColumnName(i);
 					availableLanguages.add(name);
+					Main.logger.info("Logged language " + name + " to List");
 					PreparedStatement ps1 = MySQL.getConnection().prepareStatement("SELECT path," + name + ",isGame FROM core_translations");
 					ResultSet rs1 = ps1.executeQuery();
 					map = new HashMap<>();
+					int subLangStrings = 0;
 					while(rs1.next()) {
 						if(rs1.getBoolean("isGame")) {
+							subLangStrings++;
 							//Only get Strings, which are for the game (what would we do with website/bot string, right?)
 							map.put(rs1.getString("path"), rs1.getString(name));
 						}
 					}
+					languageStrings = subLangStrings;
 					langMap.put(name, map);
 				}
+				Main.logger.info("langMap logged " + langMap.size() + " entries with each " + languageStrings + " entries per language.");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -172,8 +178,11 @@ public class LotusController {
 			while(rs.next()) {
 				if(rs.getString("type").equalsIgnoreCase("UseSeason")) {
 					useSeasonalPrefix = translateToBool(rs.getString("prefix"));
-					Main.logger.info("Using Seasonal Prefix | Source: LotusController#initPrefixSystem()");
-					Bukkit.getConsoleSender().sendMessage("Using Seasonal Prefix!");
+					if(useSeasonalPrefix) {
+						Main.logger.info("Using Seasonal Prefix | Source: LotusController#initPrefixSystem()");
+					}else {
+						Main.logger.info("Using Normal Prefix | Source: LotusController#initPrefixSystem()");
+					}
 				}
 				prefix.put(rs.getString("type"), rs.getString("prefix").replace('&', '§'));
 			}
@@ -217,6 +226,21 @@ public class LotusController {
 		ItemStack is = new ItemStack(material, amount);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(displayName);
+		is.setItemMeta(im);
+		return is;
+	}
+	
+	public ItemStack defItemRandom(List<Material> materialList, String displayName, int amount, String... lore) {
+		Random random = new Random();
+		int randomIndex = random.nextInt(materialList.size());
+		ItemStack is = new ItemStack(materialList.get(randomIndex), amount);
+		ItemMeta im = is.getItemMeta();
+		im.setDisplayName(displayName);
+		List<String> loreList = new ArrayList<>();
+		for(String string : lore) {
+			loreList.add(string);
+		}
+		im.setLore(loreList);
 		is.setItemMeta(im);
 		return is;
 	}
