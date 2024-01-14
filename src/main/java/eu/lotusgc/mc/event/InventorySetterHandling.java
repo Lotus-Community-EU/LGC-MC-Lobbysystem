@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -26,6 +29,7 @@ import eu.lotusgc.mc.main.Main;
 import eu.lotusgc.mc.misc.HotbarItem;
 import eu.lotusgc.mc.misc.InputType;
 import eu.lotusgc.mc.misc.MySQL;
+import eu.lotusgc.mc.misc.Playerdata;
 import eu.lotusgc.mc.misc.Prefix;
 import eu.lotusgc.mc.misc.Serverdata;
 
@@ -41,6 +45,8 @@ public class InventorySetterHandling implements Listener{
 	public static String navi_skyblock = "§7§fSky§2Block";
 	public static String navi_gameslobby = "§dGameslobby";
 	public static String navi_farmserver = "§9Farmserver";
+	
+	public static String language_title = "§6Languages";
 	
 	public static String extras_title = "§9Extras";
 	public static String extras_pets = "";
@@ -112,10 +118,27 @@ public class InventorySetterHandling implements Listener{
 		player.openInventory(mainInventory);
 	}
 	
+	public static void setLanguageInventory(Player player) {
+		Inventory mainInventory = Bukkit.createInventory(null, 9*3, language_title);
+		LotusController lc = new LotusController();
+		int slot = 0;
+		String playerLang = lc.getPlayerData(player, Playerdata.Language);
+		for(String string : lc.getAvailableLanguages()) {
+			String fancyName = langs.getOrDefault(string, "Error!");
+			if(string.equalsIgnoreCase(playerLang)) {
+				mainInventory.setItem(slot, lc.loreItem(Material.NETHER_STAR, 1, "§6" + fancyName, "§7Language is:", "§7» §a" + string));
+			}else {
+				mainInventory.setItem(slot, lc.defItemRandom(matList(), "§a" + fancyName, 1, "§7Language is:", "§7» §a" + string));
+			}
+			slot++;
+		}
+		player.openInventory(mainInventory);
+	}
+	
 	public static void setExtrasInventory(Player player) {
 		Inventory mainInventory = Bukkit.createInventory(null, 9*3, rewards_title);
 		LotusController lc = new LotusController();
-		for(int i = 0; i < 26; i++) {
+		for(int i = 0; i < 27; i++) {
 			mainInventory.setItem(i, lc.defItem(Material.BLUE_STAINED_GLASS_PANE, "§0", 1));
 		}
 		mainInventory.setItem(10, lc.loreItem(Material.PIG_SPAWN_EGG, 1, extras_pets, "§cThis Feature is", "§cnot enabled yet."));
@@ -125,12 +148,11 @@ public class InventorySetterHandling implements Listener{
 		player.openInventory(mainInventory);
 	}
 	
-	//TODO #139 must be fixed, as server is loading all servers over and over again. Thus must be loaded upon boot up to prevent over-usage of SQL.
-	
 	@SuppressWarnings("unused")
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		Player player = (Player) event.getWhoClicked();
+		if(event.getCurrentItem() == null) return;
 		if(event.getView().getTitle().equalsIgnoreCase(navi_title)) {
 			LotusController lc = new LotusController();
 			event.setCancelled(true);
@@ -200,11 +222,26 @@ public class InventorySetterHandling implements Listener{
 			LotusController lc = new LotusController();
 			if(event.getCurrentItem() == null && event.getCurrentItem().getItemMeta() == null) return;
 			String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
+		}else if(event.getView().getTitle().equalsIgnoreCase(language_title)) {
+			event.setCancelled(true);
+			LotusController lc = new LotusController();
+			if(event.getCurrentItem() == null && event.getCurrentItem().getItemMeta() == null) return;
+			String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
+			itemName = ChatColor.stripColor(event.getCurrentItem().getItemMeta().getLore().get(1)).substring(2);
+			if(findAndUpdatePlayerLanguage(player, itemName)) {
+				//Updated language to %language% successfully!
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.languageInventory.success").replace("%language%", itemName));
+			}else {
+				//Error whilst updating to language %language%
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.languageInventory.error").replace("%language%", itemName));
+			}
 		}else {
 			event.setCancelled(false);
 		}
 	}
 	
+	
+	//Playerhider is not yet testable with one account! Will happen once we've got a somewhat stable infrastructure.
 	@EventHandler
 	public void onInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
@@ -226,6 +263,11 @@ public class InventorySetterHandling implements Listener{
 					}else if(itemName.equalsIgnoreCase(HotbarItem.hb_hider_all)) {
 						event.setCancelled(true);
 						player.getInventory().setItem(6, lc.defItem(Material.MAGENTA_DYE, HotbarItem.hb_hider_staff, 1));
+						for(Player all : Bukkit.getOnlinePlayers()) {
+							if(!all.hasPermission("lgc.isStaff")) {
+								player.hidePlayer(Main.main, all);
+							}
+						}
 					}else if(itemName.equalsIgnoreCase(HotbarItem.hb_hider_staff)) {
 						event.setCancelled(true);
 						player.getInventory().setItem(6, lc.defItem(Material.GRAY_DYE, HotbarItem.hb_hider_none, 1));
@@ -235,6 +277,7 @@ public class InventorySetterHandling implements Listener{
 					}else if(itemName.equalsIgnoreCase(HotbarItem.hb_language)) {
 						event.setCancelled(true);
 						lc.sendMessageReady(player, "event.hotbar.open.language");
+						setLanguageInventory(player);
 					}else if(itemName.equalsIgnoreCase(HotbarItem.hb_navigator)) {
 						event.setCancelled(true);
 						setNavigatorInventory(player);
@@ -262,18 +305,76 @@ public class InventorySetterHandling implements Listener{
 		player.sendPluginMessage(Main.main, "BungeeCord", baos.toByteArray());
 	}
 	
-	private HashMap<String, String> getServerFancynames(){
-		HashMap<String, String> map = new HashMap<>();
+	private static HashMap<String, String> servers = new HashMap<>();
+	private static HashMap<String, String> langs = new HashMap<>();
+	
+	public static void loadServer() {
 		try {
 			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT displayname,bungeeKey FROM mc_serverstats");
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()) {
-				map.put(rs.getString("displayname"), rs.getString("bungeeKey"));
+				servers.put(rs.getString("displayname"), rs.getString("bungeeKey"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return map;
+		try {
+			LotusController lc = new LotusController();
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT * FROM core_translations WHERE path = ?");
+			ps.setString(1, "mcinternal.language");
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				for(String string : lc.getAvailableLanguages()) {
+					langs.put(string, rs.getString(string));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private boolean findAndUpdatePlayerLanguage(Player player, String newLanguage) {
+		boolean success = false;
+		if(langs.containsKey(newLanguage)) {
+			LotusController.playerLanguages.put(player.getUniqueId().toString(), newLanguage);
+			try {
+				PreparedStatement ps = MySQL.getConnection().prepareStatement("UPDATE mc_users SET language = ? WHERE mcuuid = ?");
+				ps.setString(1, newLanguage);
+				ps.setString(2, player.getUniqueId().toString());
+				ps.executeUpdate();
+				success = true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}else {
+			success = false;
+		}
+		return success;
+	}
+	
+	private HashMap<String, String> getServerFancynames(){
+		return servers;
+	}
+	
+	private static List<Material> matList(){
+		List<Material> matList = new ArrayList<Material>();
+		matList.add(Material.WHITE_CONCRETE_POWDER);
+		matList.add(Material.LIGHT_GRAY_CONCRETE_POWDER);
+		matList.add(Material.GRAY_CONCRETE_POWDER);
+		matList.add(Material.BLACK_CONCRETE_POWDER);
+		matList.add(Material.BROWN_CONCRETE_POWDER);
+		matList.add(Material.RED_CONCRETE_POWDER);
+		matList.add(Material.ORANGE_CONCRETE_POWDER);
+		matList.add(Material.YELLOW_CONCRETE_POWDER);
+		matList.add(Material.LIME_CONCRETE_POWDER);
+		matList.add(Material.GREEN_CONCRETE_POWDER);
+		matList.add(Material.CYAN_CONCRETE_POWDER);
+		matList.add(Material.LIGHT_BLUE_CONCRETE_POWDER);
+		matList.add(Material.BLUE_CONCRETE_POWDER);
+		matList.add(Material.PURPLE_CONCRETE_POWDER);
+		matList.add(Material.PINK_CONCRETE_POWDER);
+		matList.add(Material.MAGENTA_CONCRETE_POWDER);
+		return matList;
 	}
 
 }
