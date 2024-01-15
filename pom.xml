@@ -8,6 +8,26 @@
     <artifactId>LGC_MC_Lobbysystem</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+    
+    <name>Lotus Gaming Community Lobby System</name>
+    <url>https://www.lotusgaming.eu/</url>
+    <organization>
+		<name>Lotus Gaming Community</name>
+		<url>https://www.lotusgaming.eu/</url>
+	</organization>
+	
+	<developers>
+		<developer>
+			<id>ChrisWille2856</id>
+			<name>Christopher Wilhelm H.</name>
+			<email>info@kitsoft.at</email>
+		</developer>
+		<developer>
+			<id>Grubsic</id>
+			<name>Hidden</name>
+			<email>grubsic@lotusgaming.eu</email>
+		</developer>
+	</developers>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -20,6 +40,11 @@
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+        
+        <repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
     </repositories>
 
     <dependencies>
@@ -36,6 +61,41 @@
             <version>5.4</version>
             <scope>provided</scope>
         </dependency>
+        
+        <dependency>
+			<groupId>com.github.MilkBowl</groupId>
+			<artifactId>VaultAPI</artifactId>
+			<version>1.7</version>
+			<scope>provided</scope>
+		</dependency>
     </dependencies>
-
+    
+    <build>
+		<defaultGoal>clean install</defaultGoal>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.11.0</version>
+				<configuration>
+					<source>1.17</source>
+					<target>1.17</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
