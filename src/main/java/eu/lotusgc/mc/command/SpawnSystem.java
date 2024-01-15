@@ -40,14 +40,14 @@ public class SpawnSystem implements CommandExecutor, Listener{
 						}
 					}else if(mode.equalsIgnoreCase("setdrew")) {
 						if(player.hasPermission("lgc.spawn.admin")) {
-							setSpawn(null, player, "dailyRewards");
+							setSpawn(player.getLocation(), player, "dailyRewards");
 							lc.sendMessageReady(player, "cmd.spawnadmin.update");
 						}else {
 							lc.noPerm(player, "lgc.spawn.admin");
 						}
 					}else if(mode.equalsIgnoreCase("setcrates")) {
 						if(player.hasPermission("lgc.spawn.admin")) {
-							setSpawn(null, player, "crates");
+							setSpawn(player.getLocation(), player, "crates");
 							lc.sendMessageReady(player, "cmd.spawnadmin.update");
 						}else {
 							lc.noPerm(player, "lgc.spawn.admin");
