@@ -327,7 +327,93 @@ public class LotusController {
 		return is;
 	}
 	
-	// < - - - EN OF THE ITEMSTACKS - - - >
+	// < - - - ENC OF THE ITEMSTACKS - - - >
+	// < - - - BEGIN OF THE MONEY API - - - >
+	
+	public double getPocketMoney(Player player) {
+		double money = 0.0;
+		try {
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT money_pocket FROM mc_users WHERE mcuuid = ?");
+			ps.setString(1, player.getUniqueId().toString());
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				money = rs.getDouble("money_pocket");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return money;
+	}
+	
+	public double getBankMoney(Player player) {
+		double money = 0.0;
+		try {
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT money_bank FROM mc_users WHERE mcuuid = ?");
+			ps.setString(1, player.getUniqueId().toString());
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				money = rs.getDouble("money_bank");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return money;
+	}
+	
+	public int getInterestLevel(Player player) {
+		int interestLevel = 0;
+		try {
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT money_interestLevel FROM mc_users WHERE mcuuid = ?");
+			ps.setString(1, player.getUniqueId().toString());
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				interestLevel = rs.getInt("money_interestLevel");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return interestLevel;
+	}
+	
+	public boolean hasAccount(Player player) {
+		return true;
+		//Automatic true, as upon joining the server everything will be created in database - thus also has an account!
+	}
+	
+	public void setBankMoney(Player player, double moneyToSet) {
+		try {
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("UPDATE mc_users SET money_bank = ? WHERE mcuuid = ?");
+			ps.setDouble(1, moneyToSet);
+			ps.setString(2, player.getUniqueId().toString());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setPocketMoney(Player player, double moneyToSet) {
+		try {
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("UPDATE mc_users SET money_pocket = ? WHERE mcuuid = ?");
+			ps.setDouble(1, moneyToSet);
+			ps.setString(2, player.getUniqueId().toString());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setInterestLevel(Player player, int newInterestLevel) {
+		try {
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("UPDATE mc_users SET money_interestLevel = ? WHERE mcuuid = ?");
+			ps.setInt(1, newInterestLevel);
+			ps.setString(2, player.getUniqueId().toString());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// < - - - END OF THE MONEY API - - - >
 	// < - - - BEGIN OF THE MISC UTILS - - - >
 	
 	//load server id and name into cache
