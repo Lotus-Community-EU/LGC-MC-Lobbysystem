@@ -19,7 +19,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -58,7 +57,7 @@ public class InventorySetterHandling implements Listener{
 	
 	public static String rewards_title = "§bRewards";
 	public static String rewards_crates = "§eCrates §4(CLOSED)";
-	public static String rewards_dailyRewards = "§aDaily Rewards";
+	public static String rewards_dailyRewards = "§aDaily Rewards (§4CLOSED)";
 	
 	public static String sboost_title = "§7Speedboost";
 	public static String sboost_stage1 = "";
@@ -237,7 +236,7 @@ public class InventorySetterHandling implements Listener{
 				//Error whilst updating to language %language%
 				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.languageInventory.error").replace("%language%", itemName));
 			}
-		}else if(event.getView().getType() == InventoryType.PLAYER)  {
+		}else {
 			event.setCancelled(true);
 			LotusController lc = new LotusController();
 			String item = event.getCurrentItem().getItemMeta().getDisplayName();
@@ -250,8 +249,6 @@ public class InventorySetterHandling implements Listener{
 			}else {
 				event.setCancelled(false);
 			}
-		}else {
-			event.setCancelled(false);
 		}
 	}
 	
@@ -265,8 +262,8 @@ public class InventorySetterHandling implements Listener{
 		if(item.equalsIgnoreCase(HotbarItem.hb_extras) || item.equalsIgnoreCase(HotbarItem.hb_friends) || 
 				item.equalsIgnoreCase(HotbarItem.hb_hider_all) || item.equalsIgnoreCase(HotbarItem.hb_hider_none) || 
 				item.equalsIgnoreCase(HotbarItem.hb_hider_staff) || item.equalsIgnoreCase(HotbarItem.hb_language) || item.equalsIgnoreCase(HotbarItem.hb_navigator)) {
-			player.sendMessage(noDropMsg);
 			event.setCancelled(true);
+			player.sendMessage(noDropMsg);
 		}else {
 			event.setCancelled(false);
 		}
