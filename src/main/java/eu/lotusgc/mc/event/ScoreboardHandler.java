@@ -55,7 +55,7 @@ public class ScoreboardHandler implements Listener{
 		
 		o.setDisplaySlot(DisplaySlot.SIDEBAR);
 		sbSwitch++;
-		if(sbSwitch == 11) sbSwitch = 0; //resetting the Switcher to 0 so the views are going back again :)
+		if(sbSwitch == 15) sbSwitch = 0; //resetting the Switcher to 0 so the views are going back again :)
 		if(BuildCMD.hasPlayer(player)) {
 			ItemStack mainHandItem = player.getInventory().getItemInMainHand();
 			ItemStack offHandItem = player.getInventory().getItemInOffHand();
@@ -73,29 +73,30 @@ public class ScoreboardHandler implements Listener{
 			}
 		}else {
 			o.setDisplayName(sbPrefix);
-			if(sbSwitch >= 0 && sbSwitch <= 2) {
+			if(sbSwitch >= 0 && sbSwitch <= 3) {
 				//money
 				o.getScore(lc.sendMessageToFormat(player, "event.scoreboard.money")).setScore(2);
 				o.getScore("§7» Pocket: §a" + lc.getPlayerData(player, Playerdata.MoneyPocket) + " §6Loti").setScore(1);
 				o.getScore("§7» Bank: §e" + lc.getPlayerData(player, Playerdata.MoneyBank) + " §6Loti").setScore(0);
-			}else if(sbSwitch >= 3 && sbSwitch <= 5) {
+			}else if(sbSwitch >= 4 && sbSwitch <= 7) {
 				//role
 				o.getScore(lc.sendMessageToFormat(player, "event.scoreboard.role")).setScore(1);
 				o.getScore(retGroup(player)).setScore(0);
-			}else if(sbSwitch >= 6 && sbSwitch <= 8) {
+			}else if(sbSwitch >= 8 && sbSwitch <= 11) {
 				//playerinfo
 				o.getScore(lc.sendMessageToFormat(player, "event.scoreboard.userid")).setScore(3);
 				o.getScore("§7» §a" + lc.getPlayerData(player, Playerdata.LotusChangeID)).setScore(2);
 				o.getScore("§7Clan:").setScore(1);
 				o.getScore("§7» §a" + lc.getPlayerData(player, Playerdata.Clan)).setScore(0);
-			}else if(sbSwitch >= 9 && sbSwitch <= 11) {
+			}else if(sbSwitch >= 12 && sbSwitch <= 15) {
 				//serverinfo
+				//Will be reworked, as Lobby will have ViaVersion (to support 1.12.2 and latest (current 1.20.4)) - as the Hybrid Servers will be running mcv 1.12.2 - all HX servers will be listed on their own to just see servers where I can actually play on. (Website + Discord Bot will also be a possibility to lookup)
 				try {
 					PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT displayname,currentPlayers,isHiddenGame,isOnline FROM mc_serverstats ORDER BY serverid DESC");
 					ResultSet rs = ps.executeQuery();
 					int count = 0;
 					while(rs.next()) {
-						if(!rs.getBoolean("isHiddenGame") || !rs.getBoolean("isOnline")) {
+						if(!rs.getBoolean("isHiddenGame") && rs.getBoolean("isOnline")) {
 							count++;
 							o.getScore("§7» " + rs.getString("displayname") + "§7: §f" + rs.getInt("currentPlayers")).setScore(count);
 						}
@@ -121,8 +122,9 @@ public class ScoreboardHandler implements Listener{
 	
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onChat(AsyncPlayerChatEvent event) {
-		String message = event.getMessage().replace("&", "&&");
-		event.setFormat("§a" + event.getPlayer().getName() + "§7: " + message);
+		LotusController lc = new LotusController();
+		String message = ChatColor.translateAlternateColorCodes('&', event.getMessage().replace("%", "%%"));
+		event.setFormat("§6ROLEPLACEHOLDER §7» " + event.getPlayer().getDisplayName() + " §7(" + lc.getPlayerData(event.getPlayer(), Playerdata.LotusChangeID)+ "): " + message);
 	}
 	
 	private static String getBuildTime(Player player) {
@@ -155,7 +157,7 @@ public class ScoreboardHandler implements Listener{
 		return group;
 	}
 	
-	public void initRoles() {
+	public static void initRoles() {
 		try {
 			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT * FROM core_ranks");
 			ResultSet rs = ps.executeQuery();
@@ -216,8 +218,9 @@ public class ScoreboardHandler implements Listener{
 		new BukkitRunnable() {
 			@Override
 			public void run() {
+				LotusController lc = new LotusController();
 				for(Player all : Bukkit.getOnlinePlayers()) {
-					all.setPlayerListHeaderFooter("HEADER", "FOOTER");
+					all.setPlayerListHeaderFooter("§cLotus §aGaming §fCommunity", "§7Server: §a" + lc.getServerName() + "\n§7Time: §a00:00\n§7Ping: §a" + all.getPing());
 				}
 			}
 		}.runTaskTimerAsynchronously(Main.main, delay, tabRefresh);
