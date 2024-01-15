@@ -87,6 +87,7 @@ public class LotusManager {
 		lc.loadServerIDName();
 		
 		ScoreboardHandler.startScheduler(0, 50, 20);
+		ScoreboardHandler.initRoles();
 		SyncServerdata.startScheduler();
 		InventorySetterHandling.loadServer();
 		
