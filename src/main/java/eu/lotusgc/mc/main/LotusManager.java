@@ -8,6 +8,7 @@ import org.bukkit.plugin.PluginManager;
 
 import eu.lotusgc.mc.command.BuildCMD;
 import eu.lotusgc.mc.command.SpawnSystem;
+import eu.lotusgc.mc.event.ColorSigns;
 import eu.lotusgc.mc.event.EventBlocker;
 import eu.lotusgc.mc.event.InventorySetterHandling;
 import eu.lotusgc.mc.event.JoinEvent;
@@ -72,6 +73,7 @@ public class LotusManager {
 		pm.registerEvents(new SpawnSystem(), Main.main);
 		pm.registerEvents(new InventorySetterHandling(), Main.main);
 		pm.registerEvents(new EventBlocker(), Main.main);
+		pm.registerEvents(new ColorSigns(), Main.main);
 		
 		Bukkit.getConsoleSender().sendMessage("§aMain-Initialisation took §6" + (System.currentTimeMillis() - current) + "§ams");
 	}
