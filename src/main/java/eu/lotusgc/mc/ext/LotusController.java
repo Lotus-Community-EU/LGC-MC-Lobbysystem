@@ -305,7 +305,7 @@ public class LotusController {
 		boolean isMaintenance = translateBoolean(map.get("isMonitored"));
 		boolean isLocked = translateBoolean(map.get("isLocked"));
 		String fancyName = map.get("displayname");
-		int currentPlayers = translateInt(map.get("currentPlayers"));
+		String currentPlayers = map.get("currentPlayers");
 		String joinlevel = translateJoinLevel(map.get("req_joinlevel"));
 		if(online) {
 			lore.add("§7Online: §ayes");
@@ -543,6 +543,7 @@ public class LotusController {
 	}
 	
 	public int translateInt(String input) {
+		Main.logger.info("Debug LotusController#translateInt(STRING) | @param input got " + input);
 		if(input.matches("[0-9]+-$")) {
 			return Integer.parseInt(input);
 		}else {
