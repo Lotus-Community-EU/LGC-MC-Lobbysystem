@@ -543,7 +543,7 @@ public class LotusController {
 	}
 	
 	public int translateInt(String input) {
-		if(input.matches("^[0-9]+-$")) {
+		if(input.matches("[0-9]+-$")) {
 			return Integer.parseInt(input);
 		}else {
 			return -1;
