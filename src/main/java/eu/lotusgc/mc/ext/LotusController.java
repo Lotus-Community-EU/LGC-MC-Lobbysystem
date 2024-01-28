@@ -296,6 +296,20 @@ public class LotusController {
 		return skull;
 	}
 	
+	public ItemStack skullLoreItem(int amount, String displayname, Player skullOwner, String... lore) {
+		ItemStack skull = new ItemStack(Material.PLAYER_HEAD, amount);
+		SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+		skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(skullOwner.getUniqueId()));
+		skullMeta.setDisplayName(displayname);
+		List<String> loreList = new ArrayList<>();
+		for(String s : lore) {
+			loreList.add(s);
+		}
+		skullMeta.setLore(loreList);
+		skull.setItemMeta(skullMeta);
+		return skull;
+	}
+	
 	public ItemStack naviServerItem(Material material, String servername) {
 		ArrayList<String> lore = new ArrayList<>();
 		ItemStack is = new ItemStack(material, 1);
