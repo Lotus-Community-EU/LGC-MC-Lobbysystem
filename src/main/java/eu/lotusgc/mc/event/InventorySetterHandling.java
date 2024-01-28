@@ -237,7 +237,6 @@ public class InventorySetterHandling implements Listener{
 				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.languageInventory.error").replace("%language%", itemName));
 			}
 		}else {
-			event.setCancelled(true);
 			LotusController lc = new LotusController();
 			String item = event.getCurrentItem().getItemMeta().getDisplayName();
 			String noMoveMsg = lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.playerInventory.cancel").replace("%item%", item);
