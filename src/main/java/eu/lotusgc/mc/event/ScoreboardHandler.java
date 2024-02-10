@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -44,7 +45,7 @@ public class ScoreboardHandler implements Listener{
 	
 	private static int sbSwitch = 0;
 	
-	public static void setScoreboard(Player player) {
+	public void setScoreboard(Player player) {
 		Scoreboard sb = Bukkit.getScoreboardManager().getNewScoreboard();
 		Objective o = sb.registerNewObjective("aaa", Criteria.DUMMY, "LGCINFOBOARD");
 		LotusController lc = new LotusController();
@@ -112,7 +113,117 @@ public class ScoreboardHandler implements Listener{
 		}
 		player.setScoreboard(sb);
 		
-		//Teams will be done later, functionality is now more important (hence no real getters for the sb yet)
+		Team projlead = getTeam(sb, "projectlead", ChatColor.DARK_GRAY);
+		Team viceProjLead = getTeam(sb, "viceprojlead", ChatColor.DARK_GRAY);
+		Team staffmanager = getTeam(sb, "staffmanager", ChatColor.DARK_GRAY);
+		Team staffsupervisor = getTeam(sb, "staffsupervisor", ChatColor.DARK_GRAY);
+		Team developer = getTeam(sb, "developer", ChatColor.DARK_GRAY);
+		Team headofcommunity = getTeam(sb, "headofcommunity", ChatColor.DARK_GRAY);
+		Team humanresources = getTeam(sb, "humanresources", ChatColor.DARK_GRAY);
+		Team qualityassman = getTeam(sb, "qualityassman", ChatColor.DARK_GRAY);
+		Team admin = getTeam(sb, "admin", ChatColor.GRAY);
+		Team builder = getTeam(sb, "builder", ChatColor.GRAY);
+		Team designer = getTeam(sb, "designer", ChatColor.GRAY);
+		Team moderator = getTeam(sb, "moderator", ChatColor.GRAY);
+		Team support = getTeam(sb, "support", ChatColor.GRAY);
+		Team translator = getTeam(sb, "translator", ChatColor.GRAY);
+		Team addon = getTeam(sb, "addon", ChatColor.GRAY);
+		Team retired = getTeam(sb, "retired", ChatColor.WHITE);
+		Team beta = getTeam(sb, "beta", ChatColor.WHITE);
+		Team userg = getTeam(sb, "default", ChatColor.WHITE);
+		
+		for(Player all : Bukkit.getOnlinePlayers()) {
+			//Lotus Internal
+			String nick = lc.getPlayerData(all, Playerdata.Nick);
+			String clan = lc.getPlayerData(all, Playerdata.Clan);
+			String id = lc.getPlayerData(player, Playerdata.LotusChangeID);
+			if(nick.equalsIgnoreCase("none")) {
+				all.setCustomName(all.getName());
+			}else {
+				all.setCustomName(nick);
+			}
+			if(clan.equalsIgnoreCase("none")) {
+				clan = "";
+			}
+			
+			//LuckPerms
+			UserManager um = Main.luckPerms.getUserManager();
+			User user = um.getUser(all.getName());
+			
+			if(user.getPrimaryGroup().equalsIgnoreCase("projectlead")) {
+				projlead.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("viceprojectleader")) {
+				viceProjLead.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("staffmanager")) {
+				staffmanager.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("staffsupervisor")) {
+				staffsupervisor.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("developer")) {
+				developer.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("headofcommunity")) {
+				headofcommunity.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("humanresources")) {
+				humanresources.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("qualityassman")) {
+				qualityassman.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("admin")) {
+				admin.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("builder")) {
+				builder.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("designer")) {
+				designer.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("moderator")) {
+				moderator.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("support")) {
+				support.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("translator")) {
+				translator.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("addon")) {
+				addon.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("retired")) {
+				retired.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else if(user.getPrimaryGroup().equalsIgnoreCase("beta")) {
+				beta.addEntry(all.getName());
+				all.setDisplayName(returnPrefix(user.getPrimaryGroup(), RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix(user.getPrimaryGroup(), RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}else {
+				userg.addEntry(all.getName());
+				all.setDisplayName(returnPrefix("default", RankType.CHAT) + all.getCustomName());
+				all.setPlayerListName(returnPrefix("default", RankType.TAB) + all.getCustomName() + " §7(§a" + id + "§7) §f" + clan);
+			}
+		}
 	}
 	
 	@EventHandler
@@ -124,7 +235,7 @@ public class ScoreboardHandler implements Listener{
 	public void onChat(AsyncPlayerChatEvent event) {
 		LotusController lc = new LotusController();
 		String message = ChatColor.translateAlternateColorCodes('&', event.getMessage().replace("%", "%%"));
-		event.setFormat("§6ROLEPLACEHOLDER §7» " + event.getPlayer().getDisplayName() + " §7(" + lc.getPlayerData(event.getPlayer(), Playerdata.LotusChangeID)+ "): " + message);
+		event.setFormat(event.getPlayer().getDisplayName() + " §7(" + lc.getPlayerData(event.getPlayer(), Playerdata.LotusChangeID) + "): " + message);
 	}
 	
 	private static String getBuildTime(Player player) {
@@ -144,16 +255,14 @@ public class ScoreboardHandler implements Listener{
 		team.setPrefix(returnPrefix(role, RankType.TAB));
 		team.setColor(chatcolor);
 		team.setOption(Option.COLLISION_RULE, OptionStatus.NEVER); //TBD for removal if issues arise.
-		return null;
+		return team;
 	}
 	
-	private static String retGroup(Player player) {
+	private String retGroup(Player player) {
 		String group = "";
 		UserManager um = Main.luckPerms.getUserManager();
 		User user = um.getUser(player.getName());
-		switch(user.getPrimaryGroup()) {
-		default: group = user.getPrimaryGroup(); break;
-		}
+		group = "§a" + returnPrefix(user.getPrimaryGroup(), RankType.SIDEBOARD);
 		return group;
 	}
 	
@@ -168,10 +277,10 @@ public class ScoreboardHandler implements Listener{
 			int count = 0;
 			while(rs.next()) {
 				count++;
-				tabHM.put(rs.getString("ingame-id"), rs.getString("colour") + rs.getString("short"));
-				chatHM.put(rs.getString("ingame-id"), rs.getString("colour") + rs.getString("name"));
-				roleHM.put(rs.getString("ingame-id"), rs.getString("priority"));
-				sbHM.put(rs.getString("ingame-id"), rs.getString("name"));
+				tabHM.put(rs.getString("ingame_id"), rs.getString("colour") + rs.getString("short"));
+				chatHM.put(rs.getString("ingame_id"), rs.getString("colour") + rs.getString("name"));
+				roleHM.put(rs.getString("ingame_id"), rs.getString("priority"));
+				sbHM.put(rs.getString("ingame_id"), rs.getString("name"));
 			}
 			Main.logger.info("Downloaded " + count + " roles for the Prefix System. | Source: ScoreboardHandler#initRoles();");
 		} catch (SQLException e) {
@@ -182,17 +291,32 @@ public class ScoreboardHandler implements Listener{
 	private String returnPrefix(String role, RankType type) {
 		String toReturn = "";
 		if(type == RankType.TAB) {
-			toReturn = tabHM.get(role);
+			if(tabHM.containsKey(role)) {
+				toReturn = tabHM.get(role) + " §7» ";
+			}else {
+				toReturn = "&cDEF";
+			}
 		}else if(type == RankType.CHAT) {
-			toReturn = chatHM.get(role);
+			if(chatHM.containsKey(role)) {
+				toReturn = chatHM.get(role) + " §7» ";
+			}else {
+				toReturn = "&cDEF";
+			}
 		}else if(type == RankType.SIDEBOARD) {
-			toReturn = sbHM.get(role);
+			if(sbHM.containsKey(role)) {
+				toReturn = sbHM.get(role);
+			}else {
+				toReturn = "DEF";
+			}
 		}else if(type == RankType.TEAM) {
-			toReturn = roleHM.get(role);
-		}else {
-			toReturn = null;
+			if(roleHM.containsKey(role)) {
+				toReturn = roleHM.get(role);
+			}else {
+				Random r = new Random();
+				toReturn = "0" + r.nextInt(0, 250) + "0";
+			}
 		}
-		toReturn = ChatColor.translateAlternateColorCodes('&', toReturn); //transforms & -> §
+		toReturn = net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', toReturn); //transforms & -> §
 		toReturn = LotusController.translateHEX(toReturn); //translates HEX Color Codes into Minecraft (Custom Color Codes ability)
 		return toReturn;
 	}
@@ -204,7 +328,7 @@ public class ScoreboardHandler implements Listener{
 		TEAM
 	}
 	
-	public static void startScheduler(int delay, int sideboardRefresh, int tabRefresh) {
+	public void startScheduler(int delay, int sideboardRefresh, int tabRefresh) {
 		//SYNC TASK - ONLY FOR THE SIDEBOARD
 		new BukkitRunnable() {
 			@Override
