@@ -66,10 +66,17 @@ public class LotusController {
 			ResultSetMetaData rsmd =  rs.getMetaData();
 			int columnCount = rsmd.getColumnCount();
 			int languageStrings = 0;
+			int colToStartFrom = 0;
 			if(rs.next()) {
+				for(int i = 1; i <= columnCount; i++) {
+					String name = rsmd.getColumnName(i);
+					if(name.equals("German")) {
+						colToStartFrom = i;
+						break;
+					}
+				}
 				HashMap<String, String> map;
-				//int i equals the column number to start caching from. (non-zero based index!)
-				for(int i = 8; i <= columnCount; i++) {
+				for(int i = colToStartFrom; i <= columnCount; i++) {
 					String name = rsmd.getColumnName(i);
 					availableLanguages.add(name);
 					Main.logger.info("Logged language " + name + " to List");
