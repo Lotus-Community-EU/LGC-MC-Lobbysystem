@@ -68,7 +68,8 @@ public class LotusController {
 			int languageStrings = 0;
 			if(rs.next()) {
 				HashMap<String, String> map;
-				for(int i = 6; i <= columnCount; i++) {
+				//int i equals the column number to start caching from. (non-zero based index!)
+				for(int i = 8; i <= columnCount; i++) {
 					String name = rsmd.getColumnName(i);
 					availableLanguages.add(name);
 					Main.logger.info("Logged language " + name + " to List");
