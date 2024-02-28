@@ -37,6 +37,7 @@ public class EventBlocker implements Listener{
 		}
 	}
 	
+	@EventHandler
 	public void onHunger(FoodLevelChangeEvent event) {
 		event.setCancelled(true);
 	}
