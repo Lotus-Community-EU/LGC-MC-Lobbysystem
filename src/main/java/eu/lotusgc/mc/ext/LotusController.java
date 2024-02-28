@@ -3,6 +3,8 @@ package eu.lotusgc.mc.ext;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -402,10 +404,11 @@ public class LotusController {
 	}
 	
 	public void setMoney(Player player, double money, Money type) {
+		BigDecimal dec = new BigDecimal(money).setScale(2, RoundingMode.DOWN);
 		if(type == Money.BANK) {
 			try {
 				PreparedStatement ps = MySQL.getConnection().prepareStatement("UPDATE mc_users SET money_bank = ? WHERE mcuuid = ?");
-				ps.setDouble(1, money);
+				ps.setDouble(1, dec.doubleValue());
 				ps.setString(2, player.getUniqueId().toString());
 				ps.executeUpdate();
 			} catch (SQLException e) {
@@ -414,7 +417,7 @@ public class LotusController {
 		}else if(type == Money.POCKET) {
 			try {
 				PreparedStatement ps = MySQL.getConnection().prepareStatement("UPDATE mc_users SET money_pocket = ? WHERE mcuuid = ?");
-				ps.setDouble(1, money);
+				ps.setDouble(1, dec.doubleValue());
 				ps.setString(2, player.getUniqueId().toString());
 				ps.executeUpdate();
 			} catch (SQLException e) {
