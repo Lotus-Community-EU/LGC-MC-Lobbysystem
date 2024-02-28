@@ -98,5 +98,6 @@
 				</executions>
 			</plugin>
 		</plugins>
+		<finalName>lgc-lobbysystem</finalName>
 	</build>
 </project>
