@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 
 import eu.lotusgc.mc.command.BuildCMD;
+import eu.lotusgc.mc.command.DRS_Command;
 import eu.lotusgc.mc.command.SpawnSystem;
 import eu.lotusgc.mc.event.ColorSigns;
 import eu.lotusgc.mc.event.EventBlocker;
@@ -14,7 +15,9 @@ import eu.lotusgc.mc.event.InventorySetterHandling;
 import eu.lotusgc.mc.event.JoinEvent;
 import eu.lotusgc.mc.event.LeaveEvent;
 import eu.lotusgc.mc.event.PasswordSystem;
+import eu.lotusgc.mc.event.RewardsEvents;
 import eu.lotusgc.mc.event.ScoreboardHandler;
+import eu.lotusgc.mc.event.TreasureHunt;
 import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.SyncServerdata;
@@ -24,6 +27,9 @@ public class LotusManager {
 	
 	public static File mainFolder = new File("plugins/LotusGaming");
 	public static File mainConfig = new File("plugins/LotusGaming/config.yml");
+	public static File treasureHuntConfig = new File("plugins/LotusGaming/treasureHunt.yml");
+	public static File dailyRewardsConfig = new File("plugins/LotusGaming/dailyRewards.yml");
+	public static File adventsRewardsConfig = new File("plugins/LotusGaming/adventRewards.yml");
 	public static File propsConfig = new File("plugins/LotusGaming/propertiesBackup.yml");
 	
 	
@@ -33,10 +39,12 @@ public class LotusManager {
 		
 		//Configs
 		
-		
 		if(!mainFolder.exists()) mainFolder.mkdirs();
 		if(!mainConfig.exists()) try { mainConfig.createNewFile(); } catch (Exception ex) { };
 		if(!propsConfig.exists()) try { propsConfig.createNewFile(); } catch (Exception ex) { };
+		if(!treasureHuntConfig.exists()) try { treasureHuntConfig.createNewFile(); } catch (Exception ex) { };
+		if(!dailyRewardsConfig.exists()) try { dailyRewardsConfig.createNewFile(); } catch (Exception ex) { };
+		if(!adventsRewardsConfig.exists()) try { adventsRewardsConfig.createNewFile(); } catch (Exception ex) { };
 		
 		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(mainConfig);
 		cfg.addDefault("MySQL.Host", "127.0.0.1");
@@ -63,6 +71,7 @@ public class LotusManager {
 		Main.main.getCommand("build").setExecutor(new BuildCMD());
 		Main.main.getCommand("spawn-admin").setExecutor(new SpawnSystem());
 		Main.main.getCommand("spawn").setExecutor(new SpawnSystem());
+		Main.main.getCommand("rewards").setExecutor(new DRS_Command());
 		
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new LeaveEvent(), Main.main);
@@ -74,6 +83,8 @@ public class LotusManager {
 		pm.registerEvents(new InventorySetterHandling(), Main.main);
 		pm.registerEvents(new EventBlocker(), Main.main);
 		pm.registerEvents(new ColorSigns(), Main.main);
+		pm.registerEvents(new TreasureHunt(), Main.main);
+		pm.registerEvents(new RewardsEvents(), Main.main);
 		
 		Bukkit.getConsoleSender().sendMessage("§aMain-Initialisation took §6" + (System.currentTimeMillis() - current) + "§ams");
 	}

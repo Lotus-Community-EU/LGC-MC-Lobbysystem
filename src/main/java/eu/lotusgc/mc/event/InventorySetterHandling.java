@@ -149,7 +149,6 @@ public class InventorySetterHandling implements Listener{
 		player.openInventory(mainInventory);
 	}
 	
-	@SuppressWarnings("unused")
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		Player player = (Player) event.getWhoClicked();
