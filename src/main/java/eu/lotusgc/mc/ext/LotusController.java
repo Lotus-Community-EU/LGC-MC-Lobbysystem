@@ -457,6 +457,11 @@ public class LotusController {
 		}
 	}
 	
+	public boolean hasEnoughFunds(Player player, double moneyToCheck, Money type) {
+		double current = getMoney(player, type);
+		return (current > moneyToCheck);
+	}
+	
 	// < - - - END OF THE MONEY API - - - >
 	// < - - - BEGIN OF THE MISC UTILS - - - >
 	
