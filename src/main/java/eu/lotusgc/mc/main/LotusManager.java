@@ -10,6 +10,7 @@ import eu.lotusgc.mc.command.BuildCMD;
 import eu.lotusgc.mc.command.DRS_Command;
 import eu.lotusgc.mc.command.SpawnSystem;
 import eu.lotusgc.mc.event.ColorSigns;
+import eu.lotusgc.mc.event.EffectMoveEvent;
 import eu.lotusgc.mc.event.EventBlocker;
 import eu.lotusgc.mc.event.InventorySetterHandling;
 import eu.lotusgc.mc.event.JoinEvent;
@@ -85,6 +86,7 @@ public class LotusManager {
 		pm.registerEvents(new ColorSigns(), Main.main);
 		pm.registerEvents(new TreasureHunt(), Main.main);
 		pm.registerEvents(new RewardsEvents(), Main.main);
+		pm.registerEvents(new EffectMoveEvent(), Main.main);
 		
 		Bukkit.getConsoleSender().sendMessage("§aMain-Initialisation took §6" + (System.currentTimeMillis() - current) + "§ams");
 	}
