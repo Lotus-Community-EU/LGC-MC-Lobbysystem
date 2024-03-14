@@ -15,8 +15,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.misc.HotbarItem;
+import eu.lotusgc.mc.misc.LotusController;
 import eu.lotusgc.mc.misc.MySQL;
 
 public class JoinEvent implements Listener{
@@ -47,6 +47,9 @@ public class JoinEvent implements Listener{
 		new HotbarItem().setHotbarItems(player);
 		
 		player.setGameMode(GameMode.SURVIVAL);
+		player.setHealth(20.0);
+		player.setFoodLevel(20);
+		player.setWalkSpeed((float) 0.2);
 		event.setJoinMessage(null);
 	}
 	

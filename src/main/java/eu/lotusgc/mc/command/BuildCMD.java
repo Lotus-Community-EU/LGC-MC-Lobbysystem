@@ -19,9 +19,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import eu.lotusgc.mc.event.ScoreboardHandler;
-import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.main.Main;
 import eu.lotusgc.mc.misc.HotbarItem;
+import eu.lotusgc.mc.misc.LotusController;
 
 public class BuildCMD implements CommandExecutor, Listener{
 	

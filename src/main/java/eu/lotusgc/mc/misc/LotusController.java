@@ -1,4 +1,4 @@
-package eu.lotusgc.mc.ext;
+package eu.lotusgc.mc.misc;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -26,16 +26,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 
 import eu.lotusgc.mc.main.Main;
-import eu.lotusgc.mc.misc.InputType;
-import eu.lotusgc.mc.misc.Money;
-import eu.lotusgc.mc.misc.MySQL;
-import eu.lotusgc.mc.misc.Playerdata;
-import eu.lotusgc.mc.misc.Prefix;
-import eu.lotusgc.mc.misc.RAMInfo;
-import eu.lotusgc.mc.misc.Serverdata;
 import net.md_5.bungee.api.ChatColor;
 
 public class LotusController {
@@ -266,11 +260,11 @@ public class LotusController {
 		return is;
 	}
 	
-	public ItemStack enchantedItem(Material material, int amount, String displayName, Enchantment enchantment) {
+	public ItemStack enchantedItem(Material material, String displayName, int amount, Enchantment enchantment, int enchantmentLevel) {
 		ItemStack is = new ItemStack(material, amount);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(displayName);
-		im.addEnchant(enchantment, 1, true);
+		im.addEnchant(enchantment, enchantmentLevel, true);
 		is.setItemMeta(im);
 		return is;
 	}
@@ -296,6 +290,15 @@ public class LotusController {
 		skullMeta.setDisplayName(displayname);
 		skull.setItemMeta(skullMeta);
 		return skull;
+	}
+	
+	public ItemStack potionItem(int amount, String displayname, PotionEffect potionEffect) {
+		ItemStack potion = new ItemStack(Material.POTION, amount);
+		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
+		potionMeta.addCustomEffect(potionEffect, true);
+		potionMeta.setDisplayName(displayname);
+		potion.setItemMeta(potionMeta);
+		return potion;
 	}
 	
 	public ItemStack skullItem(int amount, String displayname, Player skullOwner) {
@@ -457,6 +460,11 @@ public class LotusController {
 		}
 	}
 	
+	public boolean hasEnoughFunds(Player player, double moneyToCheck, Money type) {
+		double current = getMoney(player, type);
+		return (current > moneyToCheck);
+	}
+	
 	// < - - - END OF THE MONEY API - - - >
 	// < - - - BEGIN OF THE MISC UTILS - - - >
 	
@@ -600,6 +608,7 @@ public class LotusController {
 		case "ALPHA": return "§cAlpha";
 		case "BETA": return "§dBeta";
 		case "EVERYONE": return "§aEveryone";
+		case "STAFF": return "§4Staff";
 		default: Main.logger.severe("Error in LotusController#translateJoinLevel() - expected ALPHA,BETA,EVERYONE but got " + input); return "§aEveryone";
 		}
 	}

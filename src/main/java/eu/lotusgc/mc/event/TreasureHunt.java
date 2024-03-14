@@ -24,8 +24,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSignOpenEvent;
 
 import eu.lotusgc.mc.command.BuildCMD;
-import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.main.LotusManager;
+import eu.lotusgc.mc.misc.LotusController;
 import eu.lotusgc.mc.misc.Money;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.Prefix;
@@ -237,26 +237,37 @@ public class TreasureHunt implements Listener {
 		List<Material> signs = new ArrayList<>();
 		signs.add(Material.OAK_WALL_SIGN);
 		signs.add(Material.OAK_WALL_HANGING_SIGN);
+		signs.add(Material.OAK_SIGN);
 		signs.add(Material.SPRUCE_WALL_SIGN);
 		signs.add(Material.SPRUCE_WALL_HANGING_SIGN);
+		signs.add(Material.SPRUCE_SIGN);
 		signs.add(Material.BIRCH_WALL_SIGN);
 		signs.add(Material.BIRCH_WALL_HANGING_SIGN);
+		signs.add(Material.BIRCH_SIGN);
 		signs.add(Material.JUNGLE_WALL_SIGN);
 		signs.add(Material.JUNGLE_WALL_HANGING_SIGN);
+		signs.add(Material.JUNGLE_SIGN);
 		signs.add(Material.ACACIA_WALL_SIGN);
 		signs.add(Material.ACACIA_WALL_HANGING_SIGN);
+		signs.add(Material.ACACIA_SIGN);
 		signs.add(Material.DARK_OAK_WALL_SIGN);
 		signs.add(Material.DARK_OAK_WALL_HANGING_SIGN);
+		signs.add(Material.DARK_OAK_SIGN);
 		signs.add(Material.MANGROVE_WALL_SIGN);
 		signs.add(Material.MANGROVE_WALL_HANGING_SIGN);
+		signs.add(Material.MANGROVE_SIGN);
 		signs.add(Material.CHERRY_WALL_SIGN);
 		signs.add(Material.CHERRY_WALL_HANGING_SIGN);
+		signs.add(Material.CHERRY_SIGN);
 		signs.add(Material.BAMBOO_WALL_SIGN);
 		signs.add(Material.BAMBOO_WALL_HANGING_SIGN);
+		signs.add(Material.BAMBOO_SIGN);
 		signs.add(Material.CRIMSON_WALL_SIGN);
 		signs.add(Material.CRIMSON_WALL_HANGING_SIGN);
+		signs.add(Material.CRIMSON_SIGN);
 		signs.add(Material.WARPED_WALL_SIGN);
 		signs.add(Material.WARPED_WALL_HANGING_SIGN);
+		signs.add(Material.WARPED_SIGN);
 		return signs.contains(input);
 	}
 }
