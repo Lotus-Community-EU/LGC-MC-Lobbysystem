@@ -47,6 +47,9 @@ public class JoinEvent implements Listener{
 		new HotbarItem().setHotbarItems(player);
 		
 		player.setGameMode(GameMode.SURVIVAL);
+		player.setHealth(20.0);
+		player.setFoodLevel(20);
+		player.setWalkSpeed((float) 0.2);
 		event.setJoinMessage(null);
 	}
 	
