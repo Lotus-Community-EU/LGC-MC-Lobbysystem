@@ -26,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 
 import eu.lotusgc.mc.main.Main;
@@ -266,11 +267,11 @@ public class LotusController {
 		return is;
 	}
 	
-	public ItemStack enchantedItem(Material material, int amount, String displayName, Enchantment enchantment) {
+	public ItemStack enchantedItem(Material material, String displayName, int amount, Enchantment enchantment, int enchantmentLevel) {
 		ItemStack is = new ItemStack(material, amount);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(displayName);
-		im.addEnchant(enchantment, 1, true);
+		im.addEnchant(enchantment, enchantmentLevel, true);
 		is.setItemMeta(im);
 		return is;
 	}
@@ -296,6 +297,15 @@ public class LotusController {
 		skullMeta.setDisplayName(displayname);
 		skull.setItemMeta(skullMeta);
 		return skull;
+	}
+	
+	public ItemStack potionItem(int amount, String displayname, PotionEffect potionEffect) {
+		ItemStack potion = new ItemStack(Material.POTION, amount);
+		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
+		potionMeta.addCustomEffect(potionEffect, true);
+		potionMeta.setDisplayName(displayname);
+		potion.setItemMeta(potionMeta);
+		return potion;
 	}
 	
 	public ItemStack skullItem(int amount, String displayname, Player skullOwner) {
