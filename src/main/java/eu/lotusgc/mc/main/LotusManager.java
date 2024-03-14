@@ -19,7 +19,7 @@ import eu.lotusgc.mc.event.PasswordSystem;
 import eu.lotusgc.mc.event.RewardsEvents;
 import eu.lotusgc.mc.event.ScoreboardHandler;
 import eu.lotusgc.mc.event.TreasureHunt;
-import eu.lotusgc.mc.ext.LotusController;
+import eu.lotusgc.mc.misc.LotusController;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.SyncServerdata;
 import net.luckperms.api.LuckPerms;

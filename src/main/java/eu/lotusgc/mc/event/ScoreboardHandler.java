@@ -25,9 +25,9 @@ import org.bukkit.scoreboard.Team.Option;
 import org.bukkit.scoreboard.Team.OptionStatus;
 
 import eu.lotusgc.mc.command.BuildCMD;
-import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.main.Main;
 import eu.lotusgc.mc.misc.InputType;
+import eu.lotusgc.mc.misc.LotusController;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.Playerdata;
 import eu.lotusgc.mc.misc.Prefix;

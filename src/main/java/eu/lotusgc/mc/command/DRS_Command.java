@@ -11,8 +11,8 @@ import org.bukkit.entity.Snowman;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Villager.Profession;
 
-import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.main.Main;
+import eu.lotusgc.mc.misc.LotusController;
 import eu.lotusgc.mc.misc.Prefix;
 import eu.lotusgc.mc.misc.RewardsUtils;
 

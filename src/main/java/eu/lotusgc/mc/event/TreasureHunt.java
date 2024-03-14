@@ -24,8 +24,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSignOpenEvent;
 
 import eu.lotusgc.mc.command.BuildCMD;
-import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.main.LotusManager;
+import eu.lotusgc.mc.misc.LotusController;
 import eu.lotusgc.mc.misc.Money;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.Prefix;

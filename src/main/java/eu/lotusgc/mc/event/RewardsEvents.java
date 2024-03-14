@@ -17,7 +17,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.Inventory;
 
-import eu.lotusgc.mc.ext.LotusController;
+import eu.lotusgc.mc.misc.LotusController;
 import eu.lotusgc.mc.misc.Money;
 import eu.lotusgc.mc.misc.Prefix;
 import eu.lotusgc.mc.misc.RewardsUtils;

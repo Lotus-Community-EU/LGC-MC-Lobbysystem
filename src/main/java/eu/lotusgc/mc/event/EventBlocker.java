@@ -12,7 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import eu.lotusgc.mc.ext.LotusController;
+import eu.lotusgc.mc.misc.LotusController;
 
 public class EventBlocker implements Listener{
 	

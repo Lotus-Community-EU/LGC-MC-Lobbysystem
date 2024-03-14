@@ -3,8 +3,6 @@ package eu.lotusgc.mc.misc;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import eu.lotusgc.mc.ext.LotusController;
-
 public class HotbarItem {
 	
 	public static String hb_extras = "§9Extras";

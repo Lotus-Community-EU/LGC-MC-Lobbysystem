@@ -1,4 +1,4 @@
-package eu.lotusgc.mc.ext;
+package eu.lotusgc.mc.misc;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -30,13 +30,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 
 import eu.lotusgc.mc.main.Main;
-import eu.lotusgc.mc.misc.InputType;
-import eu.lotusgc.mc.misc.Money;
-import eu.lotusgc.mc.misc.MySQL;
-import eu.lotusgc.mc.misc.Playerdata;
-import eu.lotusgc.mc.misc.Prefix;
-import eu.lotusgc.mc.misc.RAMInfo;
-import eu.lotusgc.mc.misc.Serverdata;
 import net.md_5.bungee.api.ChatColor;
 
 public class LotusController {
