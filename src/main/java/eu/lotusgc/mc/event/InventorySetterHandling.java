@@ -29,10 +29,10 @@ import org.bukkit.potion.PotionEffectType;
 
 import eu.lotusgc.mc.command.BuildCMD;
 import eu.lotusgc.mc.command.SpawnSystem;
-import eu.lotusgc.mc.ext.LotusController;
 import eu.lotusgc.mc.main.Main;
 import eu.lotusgc.mc.misc.HotbarItem;
 import eu.lotusgc.mc.misc.InputType;
+import eu.lotusgc.mc.misc.LotusController;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.Playerdata;
 import eu.lotusgc.mc.misc.Prefix;
@@ -97,17 +97,18 @@ public class InventorySetterHandling implements Listener{
 		boolean tempBool = true;
 		if(tempBool) {
 			//concurrent version
-			Inventory mainInventory = Bukkit.createInventory(null, 2*9, navi_title);
+			Inventory mainInventory = Bukkit.createInventory(null, 3*9, navi_title);
 			LotusController lc = new LotusController();
-			for(int i = 0; i < 18; i++) {
+			for(int i = 0; i < 27; i++) {
 				mainInventory.setItem(i, lc.defItem(Material.LIME_STAINED_GLASS_PANE, "§0", 1));
 			}
-			mainInventory.setItem(4, lc.defItem(Material.EMERALD, navi_spawn, 1));
-			mainInventory.setItem(9, lc.naviServerItem(Material.DIAMOND_PICKAXE, "Creative"));
-			mainInventory.setItem(11, lc.naviServerItem(Material.GRASS_BLOCK, "SkyBlock"));
-			mainInventory.setItem(13, lc.naviServerItem(Material.NETHERITE_AXE, "Survival"));
-			mainInventory.setItem(15, lc.naviServerItem(Material.RED_BED, "Gameslobby"));
-			mainInventory.setItem(17, lc.naviServerItem(Material.GOLDEN_HOE, "Farmserver"));
+			mainInventory.setItem(2, lc.naviServerItem(Material.RED_BED, "Gameslobby"));
+			mainInventory.setItem(6, lc.naviServerItem(Material.NETHERITE_AXE, "Survival"));
+			mainInventory.setItem(10, lc.naviServerItem(Material.GRASS_BLOCK, "SkyBlock"));
+			mainInventory.setItem(13, lc.defItem(Material.EMERALD, navi_spawn, 1));
+			mainInventory.setItem(16, lc.naviServerItem(Material.GOLDEN_HOE, "Farmserver"));
+			mainInventory.setItem(20, lc.naviServerItem(Material.WOODEN_AXE, "Staffserver"));
+			mainInventory.setItem(24, lc.naviServerItem(Material.DIAMOND_PICKAXE, "Creative"));
 			player.openInventory(mainInventory);
 		}else {
 			//version 1.12.2 (HX Servers)
@@ -330,9 +331,10 @@ public class InventorySetterHandling implements Listener{
 			mainInventory.setItem(i, lc.defItem(Material.BLUE_STAINED_GLASS_PANE, "§0", 1));
 		}
 		mainInventory.setItem(10, lc.loreItem(Material.PIG_SPAWN_EGG, 1, extras_pets, "§cThis Feature is", "§cnot enabled yet."));
-		mainInventory.setItem(12, lc.loreItem(Material.LEATHER_BOOTS, 1, extras_boots, "§cThis Feature is", "§cnot enabled yet."));
-		mainInventory.setItem(14, lc.loreItem(Material.POTION, 1, extras_sboost, "§cThis Feature is", "§cnot enabled yet."));
-		mainInventory.setItem(16, lc.loreItem(Material.POTION, 1, extras_jboost, "§cThis Feature is", "§cnot enabled yet."));
+		mainInventory.setItem(12, lc.defItem(Material.LEATHER_BOOTS, extras_boots, 1));
+		mainInventory.setItem(14, lc.defItem(Material.POTION, extras_sboost, 1));
+		mainInventory.setItem(16, lc.defItem(Material.POTION, extras_jboost, 1));
+		mainInventory.setItem(22, lc.defItem(Material.BARRIER, close, 1));
 		player.openInventory(mainInventory);
 	}
 	
@@ -351,12 +353,29 @@ public class InventorySetterHandling implements Listener{
 				if(lc.translateBoolean(lc.getServerData(bungeeName, Serverdata.OnlineStatus, InputType.BungeeKey))){
 					if(lc.translateBoolean(lc.getServerData(bungeeName, Serverdata.LockedStatus, InputType.BungeeKey))) {
 						if(player.hasPermission("lgc.bypassServerlock")) {
-							sendPlayerToServer(player, itemName, bungeeName, lc);
+							if(lc.translateBoolean(lc.getServerData(bungeeName, Serverdata.IsStaff, InputType.BungeeKey))) {
+								if(player.hasPermission("lgc.joinStaffserver")) {
+									sendPlayerToServer(player, itemName, bungeeName, lc);
+								}else {
+									Main.logger.info(player.getName() + " tried to join a staff server.");
+								}
+							}else {
+								sendPlayerToServer(player, itemName, bungeeName, lc);
+							}
 						}else {
 							Main.logger.info(player.getName() + " tried to join a locked server.");
 						}
 					}else {
-						sendPlayerToServer(player, itemName, bungeeName, lc);
+						if(lc.translateBoolean(lc.getServerData(bungeeName, Serverdata.IsStaff, InputType.BungeeKey))) {
+							if(player.hasPermission("lgc.joinStaffserver")) {
+								sendPlayerToServer(player, itemName, bungeeName, lc);
+							}else {
+								lc.noPerm(player, "lgc.joinStaffserver");
+								Main.logger.info(player.getName() + " tried to join a staff server.");
+							}
+						}else {
+							sendPlayerToServer(player, itemName, bungeeName, lc);
+						}
 					}
 				}else {
 					//server dead - how poor lol
@@ -420,6 +439,12 @@ public class InventorySetterHandling implements Listener{
 				}else if(itemName.equalsIgnoreCase(jboost_stage5)) {
 					player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999, 8));
 					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.jumpboost.staged").replace("%stage%", "4"));
+				}else if(itemName.equalsIgnoreCase(back)) {
+					setExtrasInventory(player);
+					lc.sendMessageReady(player, "event.extras.backToExtrasMenu");
+				}else if(itemName.equalsIgnoreCase(close)) {
+					lc.sendMessageReady(player, "event.extras.closedSubmenu");
+					player.getOpenInventory().close();
 				}
 			}else if(event.getView().getTitle().equalsIgnoreCase(sboost_title)) {
 				event.setCancelled(true);
@@ -441,6 +466,12 @@ public class InventorySetterHandling implements Listener{
 				}else if(itemName.equalsIgnoreCase(sboost_stage5)) {
 					player.setWalkSpeed(1.0f);
 					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.speedboost.staged").replace("%stage%", "4"));
+				}else if(itemName.equalsIgnoreCase(back)) {
+					setExtrasInventory(player);
+					lc.sendMessageReady(player, "event.extras.backToExtrasMenu");
+				}else if(itemName.equalsIgnoreCase(close)) {
+					lc.sendMessageReady(player, "event.extras.closedSubmenu");
+					player.getOpenInventory().close();
 				}
 			}else if(event.getView().getTitle().equalsIgnoreCase(language_title)) {
 				event.setCancelled(true);
@@ -460,6 +491,7 @@ public class InventorySetterHandling implements Listener{
 				LotusController lc = new LotusController();
 				String item = event.getCurrentItem().getItemMeta().getDisplayName();
 				HashMap<String, Boolean> map = getEffectSettings(player);
+				boolean closed = false;
 				if(item.equalsIgnoreCase(effect_ash)) {
 					if(map.get("ash")) {
 						map.put("ash", false);
@@ -604,10 +636,18 @@ public class InventorySetterHandling implements Listener{
 						map.put("water", true);
 						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_water));
 					}
+				}else if(item.equalsIgnoreCase(back)) {
+					closed = true;
+					setExtrasInventory(player);
+				}else if(item.equalsIgnoreCase(close)) {
+					player.getOpenInventory().close();
+					closed = true;
 				}
-				setEffectSettings(player, map);
-				EffectMoveEvent.playerEffects.put(player.getUniqueId(), map);
-				setEffectsInventory(player);
+				if(!closed) {
+					setEffectSettings(player, map);
+					EffectMoveEvent.playerEffects.put(player.getUniqueId(), map);
+					setEffectsInventory(player);
+				}
 			}else {
 				LotusController lc = new LotusController();
 				String item = event.getCurrentItem().getItemMeta().getDisplayName();
