@@ -114,8 +114,16 @@ public class BuildCMD implements CommandExecutor, Listener{
 	@EventHandler
 	public void onInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
+		List<Material> exempted = new ArrayList<>();
+		exempted.add(Material.BIG_DRIPLEAF);
+		exempted.add(Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
+		exempted.add(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
+		exempted.add(Material.OAK_PRESSURE_PLATE);
+		exempted.add(Material.DARK_OAK_PRESSURE_PLATE);
+		exempted.add(Material.ACACIA_PRESSURE_PLATE);
+		exempted.add(Material.BAMBOO_PRESSURE_PLATE);
 		if(event.getAction() == Action.PHYSICAL) {
-			if(player.getLocation().getBlock().getType() != Material.BIG_DRIPLEAF) {
+			if(!exempted.contains(event.getClickedBlock().getType())) {
 				event.setCancelled(true);
 				new LotusController().sendMessageReady(player, "event.build.wheat.cantDoThat");
 			}

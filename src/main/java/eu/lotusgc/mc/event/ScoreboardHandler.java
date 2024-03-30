@@ -49,14 +49,16 @@ public class ScoreboardHandler implements Listener{
 		Scoreboard sb = Bukkit.getScoreboardManager().getNewScoreboard();
 		Objective o = sb.registerNewObjective("aaa", Criteria.DUMMY, "LGCINFOBOARD");
 		LotusController lc = new LotusController();
+		String sbPrefix = lc.getPrefix(Prefix.SCOREBOARD);
 		String currentUsersNetwork = lc.getServerData("BungeeCord", Serverdata.CurrentPlayers, InputType.Servername);
 		int currentUsersLocal = Bukkit.getOnlinePlayers().size();
 		String maxUsers = lc.getServerData("BungeeCord", Serverdata.MaxPlayers, InputType.Servername);
-		String sbPrefix = lc.getPrefix(Prefix.SCOREBOARD);
 		
 		o.setDisplaySlot(DisplaySlot.SIDEBAR);
+		
 		sbSwitch++;
-		if(sbSwitch == 15) sbSwitch = 0; //resetting the Switcher to 0 so the views are going back again :)
+		if(sbSwitch == 15) sbSwitch = 0;
+		
 		if(BuildCMD.hasPlayer(player)) {
 			ItemStack mainHandItem = player.getInventory().getItemInMainHand();
 			ItemStack offHandItem = player.getInventory().getItemInOffHand();
