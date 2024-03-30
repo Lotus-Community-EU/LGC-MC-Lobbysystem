@@ -341,7 +341,7 @@ public class InventorySetterHandling implements Listener{
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		Player player = (Player) event.getWhoClicked();
-		if(event.getCurrentItem() == null) return;
+		if(event.getCurrentItem() == null || event.getCurrentItem().getItemMeta() == null) return;
 		if(event.getView().getTitle().equalsIgnoreCase(navi_title)) {
 			LotusController lc = new LotusController();
 			event.setCancelled(true);
@@ -364,6 +364,7 @@ public class InventorySetterHandling implements Listener{
 							}
 						}else {
 							Main.logger.info(player.getName() + " tried to join a locked server.");
+							player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.navi.targetServer.locked").replace("%targetServer%", itemName));
 						}
 					}else {
 						if(lc.translateBoolean(lc.getServerData(bungeeName, Serverdata.IsStaff, InputType.BungeeKey))) {
@@ -378,6 +379,7 @@ public class InventorySetterHandling implements Listener{
 						}
 					}
 				}else {
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.navi.targetServer.offline").replace("%targetServer%", itemName));
 					//server dead - how poor lol
 				}
 			}else {
@@ -406,254 +408,256 @@ public class InventorySetterHandling implements Listener{
 			}else if(itemName.equalsIgnoreCase(close)) {
 				player.closeInventory();
 			}
-		} else {
-			if(event.getView().getTitle().equalsIgnoreCase(rewards_title)) {
-				event.setCancelled(true);
-				//LotusController lc = new LotusController(); //for messages
-				if(event.getCurrentItem() == null && event.getCurrentItem().getItemMeta() == null) return;
-				String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
-				if(itemName.equalsIgnoreCase(rewards_dailyRewards)) {
-					Location loc = SpawnSystem.getSpawn("dailyRewards");
-					player.teleport(loc);
-				}else if(itemName.equalsIgnoreCase(rewards_crates)) {
-					Location loc = SpawnSystem.getSpawn("crates");
-					player.teleport(loc);
-				}
-			}else if(event.getView().getTitle().equalsIgnoreCase(jboost_title)) {
-				event.setCancelled(true);
-				LotusController lc = new LotusController();
-				if(event.getCurrentItem() == null && event.getCurrentItem().getItemMeta() == null) return;
-				String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
-				if(itemName.equalsIgnoreCase(jboost_stage1)) {
-					player.removePotionEffect(PotionEffectType.JUMP);
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.jumpboost.default"));
-				}else if(itemName.equalsIgnoreCase(jboost_stage2)) {
-					player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999, 2));
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.jumpboost.staged").replace("%stage%", "1"));
-				}else if(itemName.equalsIgnoreCase(jboost_stage3)) {
-					player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999, 4));
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.jumpboost.staged").replace("%stage%", "2"));
-				}else if(itemName.equalsIgnoreCase(jboost_stage4)) {
-					player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999, 6));
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.jumpboost.staged").replace("%stage%", "3"));
-				}else if(itemName.equalsIgnoreCase(jboost_stage5)) {
-					player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999, 8));
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.jumpboost.staged").replace("%stage%", "4"));
-				}else if(itemName.equalsIgnoreCase(back)) {
-					setExtrasInventory(player);
-					lc.sendMessageReady(player, "event.extras.backToExtrasMenu");
-				}else if(itemName.equalsIgnoreCase(close)) {
-					lc.sendMessageReady(player, "event.extras.closedSubmenu");
-					player.getOpenInventory().close();
-				}
-			}else if(event.getView().getTitle().equalsIgnoreCase(sboost_title)) {
-				event.setCancelled(true);
-				LotusController lc = new LotusController();
-				if(event.getCurrentItem() == null && event.getCurrentItem().getItemMeta() == null) return;
-				String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
-				if(itemName.equalsIgnoreCase(sboost_stage1)) {
-					player.setWalkSpeed(0.2f);
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.speedboost.default"));
-				}else if(itemName.equalsIgnoreCase(sboost_stage2)) {
-					player.setWalkSpeed(0.4f);
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.speedboost.staged").replace("%stage%", "1"));
-				}else if(itemName.equalsIgnoreCase(sboost_stage3)) {
-					player.setWalkSpeed(0.6f);
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.speedboost.staged").replace("%stage%", "2"));
-				}else if(itemName.equalsIgnoreCase(sboost_stage4)) {
-					player.setWalkSpeed(0.8f);
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.speedboost.staged").replace("%stage%", "3"));
-				}else if(itemName.equalsIgnoreCase(sboost_stage5)) {
-					player.setWalkSpeed(1.0f);
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.speedboost.staged").replace("%stage%", "4"));
-				}else if(itemName.equalsIgnoreCase(back)) {
-					setExtrasInventory(player);
-					lc.sendMessageReady(player, "event.extras.backToExtrasMenu");
-				}else if(itemName.equalsIgnoreCase(close)) {
-					lc.sendMessageReady(player, "event.extras.closedSubmenu");
-					player.getOpenInventory().close();
-				}
-			}else if(event.getView().getTitle().equalsIgnoreCase(language_title)) {
-				event.setCancelled(true);
-				LotusController lc = new LotusController();
-				if(event.getCurrentItem() == null && event.getCurrentItem().getItemMeta() == null) return;
-				String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
-				itemName = ChatColor.stripColor(event.getCurrentItem().getItemMeta().getLore().get(1)).substring(2);
-				if(findAndUpdatePlayerLanguage(player, itemName)) {
-					//Updated language to %language% successfully!
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.languageInventory.success").replace("%language%", itemName));
+		} else if(event.getView().getTitle().equalsIgnoreCase(rewards_title)) {
+			event.setCancelled(true);
+			//LotusController lc = new LotusController(); //for messages
+			if(event.getCurrentItem() == null && event.getCurrentItem().getItemMeta() == null) return;
+			String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
+			if(itemName.equalsIgnoreCase(rewards_dailyRewards)) {
+				Location loc = SpawnSystem.getSpawn("dailyRewards");
+				player.teleport(loc);
+			}else if(itemName.equalsIgnoreCase(rewards_crates)) {
+				Location loc = SpawnSystem.getSpawn("crates");
+				player.teleport(loc);
+			}
+		}else if(event.getView().getTitle().equalsIgnoreCase(jboost_title)) {
+			event.setCancelled(true);
+			LotusController lc = new LotusController();
+			if(event.getCurrentItem() == null && event.getCurrentItem().getItemMeta() == null) return;
+			String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
+			if(itemName.equalsIgnoreCase(jboost_stage1)) {
+				player.removePotionEffect(PotionEffectType.JUMP);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.jumpboost.default"));
+			}else if(itemName.equalsIgnoreCase(jboost_stage2)) {
+				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999, 2));
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.jumpboost.staged").replace("%stage%", "1"));
+			}else if(itemName.equalsIgnoreCase(jboost_stage3)) {
+				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999, 4));
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.jumpboost.staged").replace("%stage%", "2"));
+			}else if(itemName.equalsIgnoreCase(jboost_stage4)) {
+				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999, 6));
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.jumpboost.staged").replace("%stage%", "3"));
+			}else if(itemName.equalsIgnoreCase(jboost_stage5)) {
+				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999, 8));
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.jumpboost.staged").replace("%stage%", "4"));
+			}else if(itemName.equalsIgnoreCase(back)) {
+				setExtrasInventory(player);
+				lc.sendMessageReady(player, "event.extras.backToExtrasMenu");
+			}else if(itemName.equalsIgnoreCase(close)) {
+				lc.sendMessageReady(player, "event.extras.closedSubmenu");
+				player.getOpenInventory().close();
+			}
+		}else if(event.getView().getTitle().equalsIgnoreCase(sboost_title)) {
+			event.setCancelled(true);
+			LotusController lc = new LotusController();
+			if(event.getCurrentItem() == null && event.getCurrentItem().getItemMeta() == null) return;
+			String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
+			if(itemName.equalsIgnoreCase(sboost_stage1)) {
+				player.setWalkSpeed(0.2f);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.speedboost.default"));
+			}else if(itemName.equalsIgnoreCase(sboost_stage2)) {
+				player.setWalkSpeed(0.4f);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.speedboost.staged").replace("%stage%", "1"));
+			}else if(itemName.equalsIgnoreCase(sboost_stage3)) {
+				player.setWalkSpeed(0.6f);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.speedboost.staged").replace("%stage%", "2"));
+			}else if(itemName.equalsIgnoreCase(sboost_stage4)) {
+				player.setWalkSpeed(0.8f);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.speedboost.staged").replace("%stage%", "3"));
+			}else if(itemName.equalsIgnoreCase(sboost_stage5)) {
+				player.setWalkSpeed(1.0f);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.speedboost.staged").replace("%stage%", "4"));
+			}else if(itemName.equalsIgnoreCase(back)) {
+				setExtrasInventory(player);
+				lc.sendMessageReady(player, "event.extras.backToExtrasMenu");
+			}else if(itemName.equalsIgnoreCase(close)) {
+				lc.sendMessageReady(player, "event.extras.closedSubmenu");
+				player.getOpenInventory().close();
+			}
+		}else if(event.getView().getTitle().equalsIgnoreCase(language_title)) {
+			event.setCancelled(true);
+			LotusController lc = new LotusController();
+			if(event.getCurrentItem() == null && event.getCurrentItem().getItemMeta() == null) return;
+			String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
+			itemName = ChatColor.stripColor(event.getCurrentItem().getItemMeta().getLore().get(1)).substring(2);
+			if(findAndUpdatePlayerLanguage(player, itemName)) {
+				//Updated language to %language% successfully!
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.languageInventory.success").replace("%language%", itemName));
+			}else {
+				//Error whilst updating to language %language%
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.languageInventory.error").replace("%language%", itemName));
+			}
+		}else if(event.getView().getTitle().equalsIgnoreCase(extras_boots)) {
+			event.setCancelled(true);
+			LotusController lc = new LotusController();
+			String item = event.getCurrentItem().getItemMeta().getDisplayName();
+			HashMap<String, Boolean> map = getEffectSettings(player);
+			boolean closed = false;
+			if(item.equalsIgnoreCase(effect_ash)) {
+				if(map.get("ash")) {
+					map.put("ash", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_ash));
 				}else {
-					//Error whilst updating to language %language%
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.languageInventory.error").replace("%language%", itemName));
+					map.put("ash", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_ash));
 				}
-			}else if(event.getView().getTitle().equalsIgnoreCase(extras_boots)) {
-				event.setCancelled(true);
-				LotusController lc = new LotusController();
-				String item = event.getCurrentItem().getItemMeta().getDisplayName();
-				HashMap<String, Boolean> map = getEffectSettings(player);
-				boolean closed = false;
-				if(item.equalsIgnoreCase(effect_ash)) {
-					if(map.get("ash")) {
-						map.put("ash", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_ash));
-					}else {
-						map.put("ash", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_ash));
-					}
-				}else if(item.equalsIgnoreCase(effect_cherry)) {
-					if(map.get("cherry")) {
-						map.put("cherry", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_cherry));
-					}else {
-						map.put("cherry", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_cherry));
-					}
-				}else if(item.equalsIgnoreCase(effect_clouds)) {
-					if(map.get("clouds")) {
-						map.put("clouds", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_clouds));
-					}else {
-						map.put("clouds", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_clouds));
-					}
-				}else if(item.equalsIgnoreCase(effect_color)) {
-					if(map.get("redstone")) {
-						map.put("redstone", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_color));
-					}else {
-						map.put("redstone", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_color));
-					}
-				}else if(item.equalsIgnoreCase(effect_cryobsidian)) {
-					if(map.get("cryobsidian")) {
-						map.put("cryobsidian", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_cryobsidian));
-					}else {
-						map.put("cryobsidian", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_cryobsidian));
-					}
-				}else if(item.equalsIgnoreCase(effect_emerald)) {
-					if(map.get("emerald")) {
-						map.put("emerald", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_emerald));
-					}else {
-						map.put("emerald", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_emerald));
-					}
-				}else if(item.equalsIgnoreCase(effect_ender)) {
-					if(map.get("ender")) {
-						map.put("ender", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_ender));
-					}else {
-						map.put("ender", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_ender));
-					}
-				}else if(item.equalsIgnoreCase(effect_endrod)) {
-					if(map.get("endrod")) {
-						map.put("endrod", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_endrod));
-					}else {
-						map.put("endrod", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_endrod));
-					}
-				}else if(item.equalsIgnoreCase(effect_glow)) {
-					if(map.get("glow")) {
-						map.put("glow", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_glow));
-					}else {
-						map.put("glow", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_glow));
-					}
-				}else if(item.equalsIgnoreCase(effect_hearts)) {
-					if(map.get("hearts")) {
-						map.put("hearts", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_hearts));
-					}else {
-						map.put("hearts", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_hearts));
-					}
-				}else if(item.equalsIgnoreCase(effect_honey)) {
-					if(map.get("honey")) {
-						map.put("honey", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_honey));
-					}else {
-						map.put("honey", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_honey));
-					}
-				}else if(item.equalsIgnoreCase(effect_lava)) {
-					if(map.get("lava")) {
-						map.put("lava", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_lava));
-					}else {
-						map.put("lava", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_lava));
-					}
-				}else if(item.equalsIgnoreCase(effect_music)) {
-					if(map.get("music")) {
-						map.put("music", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_music));
-					}else {
-						map.put("music", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_music));
-					}
-				}else if(item.equalsIgnoreCase(effect_slime)) {
-					if(map.get("slime")) {
-						map.put("slime", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_slime));
-					}else {
-						map.put("slime", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_slime));
-					}
-				}else if(item.equalsIgnoreCase(effect_snow)) {
-					if(map.get("snow")) {
-						map.put("snow", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_snow));
-					}else {
-						map.put("snow", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_snow));
-					}
-				}else if(item.equalsIgnoreCase(effect_soul)) {
-					if(map.get("soulfire")) {
-						map.put("soulfire", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_soul));
-					}else {
-						map.put("soulfire", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_soul));
-					}
-				}else if(item.equalsIgnoreCase(effect_souls)) {
-					if(map.get("souls")) {
-						map.put("souls", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_souls));
-					}else {
-						map.put("souls", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_souls));
-					}
-				}else if(item.equalsIgnoreCase(effect_water)) {
-					if(map.get("water")) {
-						map.put("water", false);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_water));
-					}else {
-						map.put("water", true);
-						player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_water));
-					}
-				}else if(item.equalsIgnoreCase(back)) {
-					closed = true;
-					setExtrasInventory(player);
-				}else if(item.equalsIgnoreCase(close)) {
-					player.getOpenInventory().close();
-					closed = true;
+			}else if(item.equalsIgnoreCase(effect_cherry)) {
+				if(map.get("cherry")) {
+					map.put("cherry", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_cherry));
+				}else {
+					map.put("cherry", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_cherry));
 				}
-				if(!closed) {
-					setEffectSettings(player, map);
-					EffectMoveEvent.playerEffects.put(player.getUniqueId(), map);
-					setEffectsInventory(player);
+			}else if(item.equalsIgnoreCase(effect_clouds)) {
+				if(map.get("clouds")) {
+					map.put("clouds", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_clouds));
+				}else {
+					map.put("clouds", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_clouds));
 				}
+			}else if(item.equalsIgnoreCase(effect_color)) {
+				if(map.get("redstone")) {
+					map.put("redstone", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_color));
+				}else {
+					map.put("redstone", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_color));
+				}
+			}else if(item.equalsIgnoreCase(effect_cryobsidian)) {
+				if(map.get("cryobsidian")) {
+					map.put("cryobsidian", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_cryobsidian));
+				}else {
+					map.put("cryobsidian", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_cryobsidian));
+				}
+			}else if(item.equalsIgnoreCase(effect_emerald)) {
+				if(map.get("emerald")) {
+					map.put("emerald", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_emerald));
+				}else {
+					map.put("emerald", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_emerald));
+				}
+			}else if(item.equalsIgnoreCase(effect_ender)) {
+				if(map.get("ender")) {
+					map.put("ender", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_ender));
+				}else {
+					map.put("ender", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_ender));
+				}
+			}else if(item.equalsIgnoreCase(effect_endrod)) {
+				if(map.get("endrod")) {
+					map.put("endrod", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_endrod));
+				}else {
+					map.put("endrod", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_endrod));
+				}
+			}else if(item.equalsIgnoreCase(effect_glow)) {
+				if(map.get("glow")) {
+					map.put("glow", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_glow));
+				}else {
+					map.put("glow", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_glow));
+				}
+			}else if(item.equalsIgnoreCase(effect_hearts)) {
+				if(map.get("hearts")) {
+					map.put("hearts", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_hearts));
+				}else {
+					map.put("hearts", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_hearts));
+				}
+			}else if(item.equalsIgnoreCase(effect_honey)) {
+				if(map.get("honey")) {
+					map.put("honey", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_honey));
+				}else {
+					map.put("honey", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_honey));
+				}
+			}else if(item.equalsIgnoreCase(effect_lava)) {
+				if(map.get("lava")) {
+					map.put("lava", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_lava));
+				}else {
+					map.put("lava", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_lava));
+				}
+			}else if(item.equalsIgnoreCase(effect_music)) {
+				if(map.get("music")) {
+					map.put("music", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_music));
+				}else {
+					map.put("music", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_music));
+				}
+			}else if(item.equalsIgnoreCase(effect_slime)) {
+				if(map.get("slime")) {
+					map.put("slime", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_slime));
+				}else {
+					map.put("slime", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_slime));
+				}
+			}else if(item.equalsIgnoreCase(effect_snow)) {
+				if(map.get("snow")) {
+					map.put("snow", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_snow));
+				}else {
+					map.put("snow", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_snow));
+				}
+			}else if(item.equalsIgnoreCase(effect_soul)) {
+				if(map.get("soulfire")) {
+					map.put("soulfire", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_soul));
+				}else {
+					map.put("soulfire", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_soul));
+				}
+			}else if(item.equalsIgnoreCase(effect_souls)) {
+				if(map.get("souls")) {
+					map.put("souls", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_souls));
+				}else {
+					map.put("souls", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_souls));
+				}
+			}else if(item.equalsIgnoreCase(effect_water)) {
+				if(map.get("water")) {
+					map.put("water", false);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.removed").replace("%effect%", effect_water));
+				}else {
+					map.put("water", true);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.extras.effects.add").replace("%effect%", effect_water));
+				}
+			}else if(item.equalsIgnoreCase(back)) {
+				closed = true;
+				setExtrasInventory(player);
+			}else if(item.equalsIgnoreCase(close)) {
+				player.getOpenInventory().close();
+				closed = true;
+			}
+			if(!closed) {
+				setEffectSettings(player, map);
+				EffectMoveEvent.playerEffects.put(player.getUniqueId(), map);
+				setEffectsInventory(player);
+			}
+		}else {
+			if(BuildCMD.hasPlayer(player)) {
+				event.setCancelled(false);
 			}else {
 				LotusController lc = new LotusController();
 				String item = event.getCurrentItem().getItemMeta().getDisplayName();
 				String noMoveMsg = lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.playerInventory.cancel").replace("%item%", item);
 				if(item.equalsIgnoreCase(HotbarItem.hb_extras) || item.equalsIgnoreCase(HotbarItem.hb_friends) || item.equalsIgnoreCase(HotbarItem.hb_psettings) ||
-						item.equalsIgnoreCase(HotbarItem.hb_language) || item.equalsIgnoreCase(HotbarItem.hb_navigator)) {
+						item.equalsIgnoreCase(HotbarItem.hb_language) || item.equalsIgnoreCase(HotbarItem.hb_navigator) || item.equalsIgnoreCase(HotbarItem.hb_rewards)) {
 					player.sendMessage(noMoveMsg);
 					event.setCancelled(true);
 				}else {
