@@ -129,7 +129,7 @@ public class InventorySetterHandling implements Listener{
 		Inventory mainInventory = Bukkit.createInventory(null, 9*1, rewards_title);
 		LotusController lc = new LotusController();
 		for(int i = 0; i < 9; i++) {
-			mainInventory.setItem(i, lc.defItem(Material.MAGENTA_STAINED_GLASS_PANE, "§0", 1));
+			mainInventory.setItem(i, lc.defItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE, "§0", 1));
 		}
 		mainInventory.setItem(3, lc.defItem(Material.AMETHYST_SHARD, rewards_crates, 1));
 		mainInventory.setItem(5, lc.defItem(Material.DIAMOND, rewards_dailyRewards, 1));

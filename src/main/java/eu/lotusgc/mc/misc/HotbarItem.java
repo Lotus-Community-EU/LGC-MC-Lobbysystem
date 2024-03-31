@@ -9,7 +9,7 @@ public class HotbarItem {
 	public static String hb_language = "§6Language";
 	public static String hb_navigator = "§aNavigator";
 	public static String hb_friends = "§3Friends";
-	public static String hb_rewards = "§dRewards";
+	public static String hb_rewards = "§bRewards";
 	public static String hb_psettings = "§3Settings";
 	
 	public void setHotbarItems(Player player){
