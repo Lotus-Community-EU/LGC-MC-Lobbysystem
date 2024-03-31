@@ -674,9 +674,8 @@ public class InventorySetterHandling implements Listener{
 		LotusController lc = new LotusController();
 		// You can't drop %item%!
 		String noDropMsg = lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.drop.cancel").replace("%item%", item);
-		HashMap<String, String> fancyNames = getServerFancynames();
 		if(item.equalsIgnoreCase(HotbarItem.hb_extras) || item.equalsIgnoreCase(HotbarItem.hb_friends) || item.equalsIgnoreCase(HotbarItem.hb_psettings) ||
-				item.equalsIgnoreCase(HotbarItem.hb_language) || item.equalsIgnoreCase(HotbarItem.hb_navigator) || fancyNames.containsKey(item)) {
+				item.equalsIgnoreCase(HotbarItem.hb_language) || item.equalsIgnoreCase(HotbarItem.hb_navigator) || item.equalsIgnoreCase(HotbarItem.hb_rewards)) {
 			event.setCancelled(true);
 			player.sendMessage(noDropMsg);
 		}else {
