@@ -30,9 +30,12 @@ import org.bukkit.potion.PotionEffectType;
 import eu.lotusgc.mc.command.BuildCMD;
 import eu.lotusgc.mc.command.SpawnSystem;
 import eu.lotusgc.mc.main.Main;
+import eu.lotusgc.mc.misc.ChatbridgeEnums;
+import eu.lotusgc.mc.misc.ChatbridgeUtils;
 import eu.lotusgc.mc.misc.HotbarItem;
 import eu.lotusgc.mc.misc.InputType;
 import eu.lotusgc.mc.misc.LotusController;
+import eu.lotusgc.mc.misc.Money;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.Playerdata;
 import eu.lotusgc.mc.misc.Prefix;
@@ -46,6 +49,10 @@ public class InventorySetterHandling implements Listener{
 	public static String navi_back = "§cback";
 	
 	public static String language_title = "§6Languages";
+	
+	public static String profileSettings = "§bProfile Settings";
+	public static String profile_DCBBukkit = "§bDCB Options §6Events";
+	public static String profile_DCBProxy = "§bDCB Options §6General";
 	
 	public static String extras_title = "§9Extras";
 	public static String extras_pets = "§6Pets";
@@ -90,6 +97,23 @@ public class InventorySetterHandling implements Listener{
 	public static String effect_cryobsidian = "§7» §5Obsidian Tears";
 	public static String effect_cherry = "§7» §dCherry Leaves";
 	
+	public static String dcbs_b_advancements = "§7Show Advancements: ";
+	public static String dcbs_b_death = "§7Show Deaths: ";
+	public static String dcbs_b_killEntity = "§7Show Entitykills: ";
+	public static String dcbs_b_levelChange = "§7Show Levelup: ";
+	public static String dcbs_b_worldChange = "§7Show World Change: ";
+	
+	public static String dcbs_p_joins = "§7Show Joins: ";
+	public static String dcbs_p_serverChange = "§7Show Serverchanges: ";
+	public static String dcbs_p_quits = "§7Show Quits: ";
+	public static String dcbs_p_clans = "§7Show Clans: ";
+	public static String dcbs_p_id = "§7Show ID: ";
+	public static String dcbs_p_nick = "§7Show Nick: ";
+	public static String dcbs_p_role = "§7Show Role: ";
+	
+	public static String off = "§cno";
+	public static String on = "§ayes";
+	
 	public static String close = "§cclose";
 	public static String back = "§cback";
 	
@@ -123,6 +147,90 @@ public class InventorySetterHandling implements Listener{
 			mainInventory.setItem(7, lc.naviServerItem(Material.GOLDEN_SWORD, "Survival HX"));
 			player.openInventory(mainInventory);
 		}
+	}
+	
+	public static void setProfileSettingsInventory(Player player) {
+		Inventory inventory = Bukkit.createInventory(null, 3*9, profileSettings);
+		LotusController lc = new LotusController();
+		inventory.setItem(8, lc.loreItem(Material.GOLD_NUGGET, 1, "§aMoney", "§7Pocketmoney: §a" + lc.getMoney(player, Money.POCKET), "§7Bankmoney: §a" + lc.getMoney(player, Money.BANK), "§7Interest Level: §a" + lc.getInterestLevel(player)));
+		inventory.setItem(26, lc.defItem(Material.BOOK, language_title, 1));
+		inventory.setItem(18, lc.defItem(Material.FEATHER, profile_DCBProxy, 1));
+		inventory.setItem(19, lc.defItem(Material.FEATHER, profile_DCBBukkit, 1));
+		player.openInventory(inventory);
+	}
+	
+	public static void setDCB_BukkitSettingsInventory(Player player) {
+		Inventory inventory = Bukkit.createInventory(null, 1*9, profile_DCBBukkit);
+		HashMap<String, Boolean> map = new ChatbridgeUtils().getChatbridgeSettings(player.getUniqueId());
+		LotusController lc = new LotusController();
+		if(map.get(ChatbridgeEnums.SHOW_BUKKITADVANCEMENTS.getNodename())) {
+			inventory.setItem(0, lc.defItem(Material.GREEN_WOOL, dcbs_b_advancements + "§ayes", 1));
+		}else {
+			inventory.setItem(0, lc.defItem(Material.RED_WOOL, dcbs_b_advancements + "§cno", 1));
+		}
+		if(map.get(ChatbridgeEnums.SHOW_BUKKITDEATH.getNodename())) {
+			inventory.setItem(1, lc.defItem(Material.GREEN_WOOL, dcbs_b_death + "§ayes", 1));
+		}else {
+			inventory.setItem(1, lc.defItem(Material.RED_WOOL, dcbs_b_death + "§cno", 1));
+		}
+		if(map.get(ChatbridgeEnums.SHOW_BUKKITKILLENTITY.getNodename())) {
+			inventory.setItem(2, lc.defItem(Material.GREEN_WOOL, dcbs_b_killEntity + "§ayes", 1));
+		}else {
+			inventory.setItem(2, lc.defItem(Material.RED_WOOL, dcbs_b_killEntity + "§cno", 1));
+		}
+		if(map.get(ChatbridgeEnums.SHOW_BUKKITWORLDCHANGE.getNodename())) {
+			inventory.setItem(3, lc.defItem(Material.GREEN_WOOL, dcbs_b_worldChange + "§ayes", 1));
+		}else {
+			inventory.setItem(3, lc.defItem(Material.RED_WOOL, dcbs_b_worldChange + "§cno", 1));
+		}
+		if(map.get(ChatbridgeEnums.SHOW_BUKKITLEVELCHANGE.getNodename())) {
+			inventory.setItem(4, lc.defItem(Material.GREEN_WOOL, dcbs_b_levelChange + "§ayes", 1));
+		}else {
+			inventory.setItem(4, lc.defItem(Material.RED_WOOL, dcbs_b_levelChange + "§cno", 1));
+		}
+		player.openInventory(inventory);
+	}
+	
+	public static void setDCB_GeneralSettingsInventory(Player player) {
+		Inventory inventory = Bukkit.createInventory(null, 1*9, profile_DCBProxy);
+		HashMap<String, Boolean> map = new ChatbridgeUtils().getChatbridgeSettings(player.getUniqueId());
+		LotusController lc = new LotusController();
+		if(map.get(ChatbridgeEnums.SHOW_JOIN.getNodename())) {
+			inventory.setItem(0, lc.defItem(Material.GREEN_WOOL, dcbs_p_joins + "§ayes", 1));
+		}else {
+			inventory.setItem(0, lc.defItem(Material.RED_WOOL, dcbs_p_joins + "§cno", 1));
+		}
+		if(map.get(ChatbridgeEnums.SHOW_SERVERCHANGE.getNodename())) {
+			inventory.setItem(1, lc.defItem(Material.GREEN_WOOL, dcbs_p_serverChange + "§ayes", 1));
+		}else {
+			inventory.setItem(1, lc.defItem(Material.RED_WOOL, dcbs_p_serverChange + "§cno", 1));
+		}
+		if(map.get(ChatbridgeEnums.SHOW_QUIT.getNodename())) {
+			inventory.setItem(2, lc.defItem(Material.GREEN_WOOL, dcbs_p_quits + "§ayes", 1));
+		}else {
+			inventory.setItem(2, lc.defItem(Material.RED_WOOL, dcbs_p_quits + "§cno", 1));
+		}
+		if(map.get(ChatbridgeEnums.SHOW_CLAN.getNodename())) {
+			inventory.setItem(3, lc.defItem(Material.GREEN_WOOL, dcbs_p_clans + "§ayes", 1));
+		}else {
+			inventory.setItem(3, lc.defItem(Material.RED_WOOL, dcbs_p_clans + "§cno", 1));
+		}
+		if(map.get(ChatbridgeEnums.SHOW_ID.getNodename())) {
+			inventory.setItem(4, lc.defItem(Material.GREEN_WOOL, dcbs_p_id + "§ayes", 1));
+		}else {
+			inventory.setItem(4, lc.defItem(Material.RED_WOOL, dcbs_p_id + "§cno", 1));
+		}
+		if(map.get(ChatbridgeEnums.SHOW_NICK.getNodename())) {
+			inventory.setItem(5, lc.defItem(Material.GREEN_WOOL, dcbs_p_nick + "§ayes", 1));
+		}else {
+			inventory.setItem(5, lc.defItem(Material.RED_WOOL, dcbs_p_nick + "§cno", 1));
+		}
+		if(map.get(ChatbridgeEnums.SHOW_ROLE.getNodename())) {
+			inventory.setItem(6, lc.defItem(Material.GREEN_WOOL, dcbs_p_role + "§ayes", 1));
+		}else {
+			inventory.setItem(6, lc.defItem(Material.RED_WOOL, dcbs_p_role + "§cno", 1));
+		}
+		player.openInventory(inventory);
 	}
 	
 	public static void setRewardsInventory(Player player) {
@@ -490,8 +598,8 @@ public class InventorySetterHandling implements Listener{
 		}else if(event.getView().getTitle().equalsIgnoreCase(extras_boots)) {
 			event.setCancelled(true);
 			LotusController lc = new LotusController();
-			String item = event.getCurrentItem().getItemMeta().getDisplayName();
 			HashMap<String, Boolean> map = getEffectSettings(player);
+			String item = event.getCurrentItem().getItemMeta().getDisplayName();
 			boolean closed = false;
 			if(item.equalsIgnoreCase(effect_ash)) {
 				if(map.get("ash")) {
@@ -649,6 +757,128 @@ public class InventorySetterHandling implements Listener{
 				EffectMoveEvent.playerEffects.put(player.getUniqueId(), map);
 				setEffectsInventory(player);
 			}
+		}else if(event.getView().getTitle().equalsIgnoreCase(profileSettings)) {
+			event.setCancelled(true);
+			LotusController lc = new LotusController();
+			String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
+			if(itemName.equalsIgnoreCase(language_title)) {
+				lc.sendMessageReady(player, "event.hotbar.open.language");
+				setLanguageInventory(player);
+			}else if(itemName.equalsIgnoreCase(profile_DCBBukkit)) {
+				setDCB_BukkitSettingsInventory(player);
+			}else if(itemName.equalsIgnoreCase(profile_DCBProxy)) {
+				setDCB_GeneralSettingsInventory(player);
+			}
+		}else if(event.getView().getTitle().equalsIgnoreCase(profile_DCBBukkit)) {
+			String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
+			LotusController lc = new LotusController();
+			event.setCancelled(true);
+			HashMap<String, Boolean> map = new ChatbridgeUtils().getChatbridgeSettings(player.getUniqueId());
+			if(itemName.equalsIgnoreCase(dcbs_b_advancements + on)) {
+				map.put(ChatbridgeEnums.SHOW_BUKKITADVANCEMENTS.getNodename(), false);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.disabled").replace("%setting%", "Advancements"));
+			}else if(itemName.equalsIgnoreCase(dcbs_b_advancements + off)) {
+				map.put(ChatbridgeEnums.SHOW_BUKKITADVANCEMENTS.getNodename(), true);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.enabled").replace("%setting%", "Advancements"));
+			}else if(itemName.equalsIgnoreCase(dcbs_b_death + on)) {
+				map.put(ChatbridgeEnums.SHOW_BUKKITDEATH.getNodename(), false);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.disabled").replace("%setting%", "Death Messages"));
+			}else if(itemName.equalsIgnoreCase(dcbs_b_death + off)) {
+				map.put(ChatbridgeEnums.SHOW_BUKKITDEATH.getNodename(), true);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.enabled").replace("%setting%", "Death Messages"));
+			}else if(itemName.equalsIgnoreCase(dcbs_b_killEntity + on)) {
+				map.put(ChatbridgeEnums.SHOW_BUKKITKILLENTITY.getNodename(), false);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.disabled").replace("%setting%", "Killed Entity"));
+			}else if(itemName.equalsIgnoreCase(dcbs_b_killEntity + off)) {
+				map.put(ChatbridgeEnums.SHOW_BUKKITKILLENTITY.getNodename(), true);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.enabled").replace("%setting%", "Killed Entity"));
+			}else if(itemName.equalsIgnoreCase(dcbs_b_levelChange + on)) {
+				map.put(ChatbridgeEnums.SHOW_BUKKITLEVELCHANGE.getNodename(), false);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.disabled").replace("%setting%", "Level Up Message"));
+			}else if(itemName.equalsIgnoreCase(dcbs_b_levelChange + off)) {
+				map.put(ChatbridgeEnums.SHOW_BUKKITLEVELCHANGE.getNodename(), true);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.enabled").replace("%setting%", "Level Up Message"));
+			}else if(itemName.equalsIgnoreCase(dcbs_b_worldChange + on)) {
+				map.put(ChatbridgeEnums.SHOW_BUKKITWORLDCHANGE.getNodename(), false);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.disabled").replace("%setting%", "World Change"));
+			}else if(itemName.equalsIgnoreCase(dcbs_b_worldChange + off)) {
+				map.put(ChatbridgeEnums.SHOW_BUKKITWORLDCHANGE.getNodename(), true);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.enabled").replace("%setting%", "World Change"));
+			}
+			setDCB_BukkitSettingsInventory(player);
+		}else if(event.getView().getTitle().equalsIgnoreCase(profile_DCBProxy)) {
+			String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
+			LotusController lc = new LotusController();
+			HashMap<String, Boolean> map = new ChatbridgeUtils().getChatbridgeSettings(player.getUniqueId());
+			event.setCancelled(true);
+			if(itemName.equalsIgnoreCase(dcbs_p_clans + on)) {
+				map.put(ChatbridgeEnums.SHOW_CLAN.getNodename(), false);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.disabled").replace("%setting%", "Show Clan"));
+			}else if(itemName.equalsIgnoreCase(dcbs_p_clans + off)) {
+				map.put(ChatbridgeEnums.SHOW_CLAN.getNodename(), true);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.enabled").replace("%setting%", "Show Clan"));
+			}else if(itemName.equalsIgnoreCase(dcbs_p_id + on)) {
+				map.put(ChatbridgeEnums.SHOW_ID.getNodename(), false);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.disabled").replace("%setting%", "Show ID"));
+			}else if(itemName.equalsIgnoreCase(dcbs_p_id + off)) {
+				map.put(ChatbridgeEnums.SHOW_ID.getNodename(), true);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.enabled").replace("%setting%", "Show ID"));
+			}else if(itemName.equalsIgnoreCase(dcbs_p_joins + on)) {
+				map.put(ChatbridgeEnums.SHOW_JOIN.getNodename(), false);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.disabled").replace("%setting%", "Announce Join"));
+			}else if(itemName.equalsIgnoreCase(dcbs_p_joins + off)) {
+				map.put(ChatbridgeEnums.SHOW_JOIN.getNodename(), true);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.enabled").replace("%setting%", "Announce Join"));
+			}else if(itemName.equalsIgnoreCase(dcbs_p_nick + on)) {
+				map.put(ChatbridgeEnums.SHOW_NICK.getNodename(), false);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.disabled").replace("%setting%", "Show Nick"));
+			}else if(itemName.equalsIgnoreCase(dcbs_p_nick + off)) {
+				map.put(ChatbridgeEnums.SHOW_NICK.getNodename(), true);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.enabled").replace("%setting%", "Show Nick"));
+			}else if(itemName.equalsIgnoreCase(dcbs_p_quits + on)) {
+				map.put(ChatbridgeEnums.SHOW_QUIT.getNodename(), false);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.disabled").replace("%setting%", "Announce Quit"));
+			}else if(itemName.equalsIgnoreCase(dcbs_p_quits + off)) {
+				map.put(ChatbridgeEnums.SHOW_QUIT.getNodename(), true);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.enabled").replace("%setting%", "Announce Quit"));
+			}else if(itemName.equalsIgnoreCase(dcbs_p_role + on)) {
+				map.put(ChatbridgeEnums.SHOW_ROLE.getNodename(), false);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.disabled").replace("%setting%", "Show Role"));
+			}else if(itemName.equalsIgnoreCase(dcbs_p_role + off)) {
+				map.put(ChatbridgeEnums.SHOW_ROLE.getNodename(), true);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.enabled").replace("%setting%", "Show Role"));
+			}else if(itemName.equalsIgnoreCase(dcbs_p_serverChange + on)) {
+				map.put(ChatbridgeEnums.SHOW_SERVERCHANGE.getNodename(), false);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.disabled").replace("%setting%", "Announce Server Change"));
+			}else if(itemName.equalsIgnoreCase(dcbs_p_serverChange + off)) {
+				map.put(ChatbridgeEnums.SHOW_SERVERCHANGE.getNodename(), true);
+				new ChatbridgeUtils().setChatbridgeSettings(player.getUniqueId(), map);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.settings.chatbridge.enabled").replace("%setting%", "Announce Server Change"));
+			}
+			setDCB_GeneralSettingsInventory(player);
 		}else {
 			if(BuildCMD.hasPlayer(player)) {
 				event.setCancelled(false);
@@ -704,6 +934,7 @@ public class InventorySetterHandling implements Listener{
 					}else if(itemName.equalsIgnoreCase(HotbarItem.hb_psettings)) {
 						event.setCancelled(true);
 						lc.sendMessageReady(player, "event.hotbar.open.settings");
+						setProfileSettingsInventory(player);
 					}else if(itemName.equalsIgnoreCase(HotbarItem.hb_language)) {
 						event.setCancelled(true);
 						lc.sendMessageReady(player, "event.hotbar.open.language");
@@ -846,4 +1077,6 @@ public class InventorySetterHandling implements Listener{
 			e.printStackTrace();
 		}
 	}
+	
+	
 }

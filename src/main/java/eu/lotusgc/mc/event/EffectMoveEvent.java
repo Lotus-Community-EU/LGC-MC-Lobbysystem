@@ -9,8 +9,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
-import org.bukkit.Color;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
