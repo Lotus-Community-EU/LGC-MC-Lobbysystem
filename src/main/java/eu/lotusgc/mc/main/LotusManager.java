@@ -15,7 +15,6 @@ import eu.lotusgc.mc.event.EventBlocker;
 import eu.lotusgc.mc.event.InventorySetterHandling;
 import eu.lotusgc.mc.event.JoinEvent;
 import eu.lotusgc.mc.event.LeaveEvent;
-import eu.lotusgc.mc.event.PasswordSystem;
 import eu.lotusgc.mc.event.RewardsEvents;
 import eu.lotusgc.mc.event.ScoreboardHandler;
 import eu.lotusgc.mc.event.TreasureHunt;
@@ -68,7 +67,6 @@ public class LotusManager {
 	public void mainInit() {
 		long current = System.currentTimeMillis();
 		
-		Main.main.getCommand("unlock").setExecutor(new PasswordSystem());
 		Main.main.getCommand("build").setExecutor(new BuildCMD());
 		Main.main.getCommand("spawn-admin").setExecutor(new SpawnSystem());
 		Main.main.getCommand("spawn").setExecutor(new SpawnSystem());
@@ -77,7 +75,6 @@ public class LotusManager {
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new LeaveEvent(), Main.main);
 		pm.registerEvents(new JoinEvent(), Main.main);
-		pm.registerEvents(new PasswordSystem(), Main.main);
 		pm.registerEvents(new BuildCMD(), Main.main);
 		pm.registerEvents(new ScoreboardHandler(), Main.main);
 		pm.registerEvents(new SpawnSystem(), Main.main);
