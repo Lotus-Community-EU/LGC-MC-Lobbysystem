@@ -26,7 +26,7 @@ public enum ChatbridgeEnums {
 		this.node = node;
 	}
 	
-	String getNodename() {
+	public String getNodename() {
 		return node;
 	}
 	
