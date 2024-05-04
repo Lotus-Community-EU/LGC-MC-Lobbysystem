@@ -31,6 +31,7 @@ import eu.lotusgc.mc.misc.LotusController;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.Playerdata;
 import eu.lotusgc.mc.misc.Prefix;
+import eu.lotusgc.mc.misc.ServerRestarter;
 import eu.lotusgc.mc.misc.Serverdata;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
@@ -344,6 +345,13 @@ public class ScoreboardHandler implements Listener{
 		new BukkitRunnable() {
 			@Override
 			public void run() {
+				new ServerRestarter().triggerRestart();
+			}
+		}.runTaskTimer(Main.main, delay, tabRefresh);
+		
+		new BukkitRunnable() {
+			@Override
+			public void run() {
 				LotusController lc = new LotusController();
 				for(Player all : Bukkit.getOnlinePlayers()) {
 					all.setPlayerListHeaderFooter("§cLotus §aGaming §fCommunity", "§7Server: §a" + lc.getServerName() + "\n§7Time: §a00:00\n§7Ping: §a" + all.getPing());
@@ -351,5 +359,4 @@ public class ScoreboardHandler implements Listener{
 			}
 		}.runTaskTimerAsynchronously(Main.main, delay, tabRefresh);
 	}
-
 }
