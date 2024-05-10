@@ -18,7 +18,10 @@ public enum Playerdata {
 	MoneyPocket("money_pocket"),
 	MoneyInterestLevel("money_interestLevel"),
 	Language("language"),
-	PlayerGroup("playerGroup");
+	PlayerGroup("playerGroup"),
+	CustomTimeFormat("customTimeFormat"),
+	CustomDateFormat("customDateFormat"),
+	TimeZone("timeZone"); //Will be determined automatically upon joining.
 	
 	public String playerData;
 	
