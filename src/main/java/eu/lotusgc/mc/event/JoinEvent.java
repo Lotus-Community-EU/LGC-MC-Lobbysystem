@@ -124,7 +124,7 @@ public class JoinEvent implements Listener{
 		}while (knownIDs.contains(newID));
 		
 		try {
-			PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT INTO mc_users(mcuuid, lgcid, name, firstJoin, lastJoin, currentLastServer, isOnline) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT INTO mc_users(mcuuid, lgcid, name, firstJoin, lastJoin, currentLastServer, isOnline) VALUES (?, ?, ?, ?, ?, ?, ?)");
 			ps.setString(1, player.getUniqueId().toString());
 			ps.setInt(2, newID);
 			ps.setString(3, player.getName());
