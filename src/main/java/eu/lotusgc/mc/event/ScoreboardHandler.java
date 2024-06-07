@@ -3,8 +3,14 @@ package eu.lotusgc.mc.event;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Random;
+import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -354,7 +360,11 @@ public class ScoreboardHandler implements Listener{
 			public void run() {
 				LotusController lc = new LotusController();
 				for(Player all : Bukkit.getOnlinePlayers()) {
-					all.setPlayerListHeaderFooter("§cLotus §aGaming §fCommunity", "§7Server: §a" + lc.getServerName() + "\n§7Time: §a00:00\n§7Ping: §a" + all.getPing());
+					String timeZone = lc.getPlayerData(all, Playerdata.TimeZone);
+					ZoneId zoneId = ZoneId.ofOffset("GMT", ZoneOffset.of(timeZone));
+					SimpleDateFormat sdf = new SimpleDateFormat(lc.getPlayerData(all, Playerdata.CustomTimeFormat));
+					sdf.setTimeZone(TimeZone.getTimeZone(Objects.requireNonNullElse(zoneId.getId(), "UTC")));
+					all.setPlayerListHeaderFooter("§cLotus §aGaming §fCommunity", "§7Server: §a" + lc.getServerName() + "\n§7Time: §a" + sdf.format(new Date()) + "\n§7Ping: §a" + all.getPing());
 				}
 			}
 		}.runTaskTimerAsynchronously(Main.main, delay, tabRefresh);

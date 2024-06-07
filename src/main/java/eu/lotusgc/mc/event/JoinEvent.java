@@ -1,5 +1,10 @@
 package eu.lotusgc.mc.event;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,6 +19,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import eu.lotusgc.mc.misc.HotbarItem;
 import eu.lotusgc.mc.misc.LotusController;
@@ -35,11 +42,11 @@ public class JoinEvent implements Listener{
 		
 		//Handling the ID
 		if(existPlayer(player.getUniqueId())) {
-			updateOnlineStatus(player.getUniqueId(), true);
+			updateOnlineStatus(player, true);
 		}else {
 			Set<Integer> existingIDs = getExistingIDs();
 			addPlayerToDB(player, existingIDs);
-			updateOnlineStatus(player.getUniqueId(), true);
+			updateOnlineStatus(player, true);
 			lc.addPlayerLanguageWhenRegistered(player);
 		}
 		
@@ -72,11 +79,17 @@ public class JoinEvent implements Listener{
 	}
 	
 	//update the online status (true for online, false for offline)
-	private void updateOnlineStatus(UUID uuid, boolean status) {
+	private void updateOnlineStatus(Player player, boolean status) {
 		try {
-			PreparedStatement ps = MySQL.getConnection().prepareStatement("UPDATE mc_users SET isOnline = ? WHERE mcuuid = ?");
+			JsonObject jo = getAPIData(player.getAddress().getHostName());
+			LotusController lc = new LotusController();
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("UPDATE mc_users SET isOnline = ?, name = ?, timeZone = ?, countryCode = ?, currentLastServer = ? WHERE mcuuid = ?");
 			ps.setBoolean(1, status);
-			ps.setString(2, uuid.toString());
+			ps.setString(2, player.getName());
+			ps.setString(3, jo.get("timeZone").getAsString().replace("\"", ""));
+			ps.setString(4, jo.get("countryCode").getAsString().replace("\"", ""));
+			ps.setString(5, lc.getServerName());
+			ps.setString(6, player.getUniqueId().toString());
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -111,7 +124,7 @@ public class JoinEvent implements Listener{
 		}while (knownIDs.contains(newID));
 		
 		try {
-			PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT INTO mc_users(mcuuid, lgcid, name, firstJoin, lastJoin, currentLastServer, isOnline, passSalt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT INTO mc_users(mcuuid, lgcid, name, firstJoin, lastJoin, currentLastServer, isOnline) VALUES (?, ?, ?, ?, ?, ?, ?)");
 			ps.setString(1, player.getUniqueId().toString());
 			ps.setInt(2, newID);
 			ps.setString(3, player.getName());
@@ -119,7 +132,6 @@ public class JoinEvent implements Listener{
 			ps.setLong(5, System.currentTimeMillis());
 			ps.setString(6, "Lobby");
 			ps.setBoolean(7, true);
-			ps.setString(8, getRandomSalt(8));
 			ps.executeUpdate();
 			Bukkit.getConsoleSender().sendMessage("§aPlayer §6" + player.getName() + " §ahas been assigned the ID §6" + newID);
 		} catch (SQLException e) {
@@ -138,16 +150,55 @@ public class JoinEvent implements Listener{
 		return number;
 	}
 	
-	//generates a random Salt for the password system, which is mandatory for being staff, however optional to use for users. Alike 2FA
-	private String getRandomSalt(int length) {
-		String allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz!?+-=*#:/&";
-		
+	@SuppressWarnings("deprecation")
+	private JsonObject getAPIData(String ip) {
 		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < length; i++) {
-			int index = (int) (allowedChars.length() * Math.random());
-			sb.append(allowedChars.charAt(index));
+		try {
+			URL uri = new URL("http://api.ipinfodb.com/v3/ip-city/?key=d7859a91e5346872d0378a2674821fbd60bc07ed63684c3286c083198f024138&ip=" + ip + "&format=json");
+			URLConnection uc = uri.openConnection();
+			BufferedReader bR = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+			String line;
+			while((line = bR.readLine()) != null) {
+				sb.append(line + "\n");
+			}
+			bR.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		return sb.toString();
+		
+		String lortu = sb.toString();
+		JsonParser parser = new JsonParser();
+		JsonObject jo = (JsonObject) parser.parse(lortu);
+		return jo;
 	}
-
+	
+	/*private JSONObject getAPIData(String ip) {
+		String uri = "http://api.ipinfodb.com/v3/ip-city/?key=d7859a91e5346872d0378a2674821fbd60bc07ed63684c3286c083198f024138&ip=" + ip + "&format=json";
+		URL url = null;
+		try {
+			url = new URL(uri);
+		}catch (MalformedURLException e) {
+		}
+		URLConnection uc = null;
+		try {
+			uc = url.openConnection();
+		} catch (IOException e) {
+		}
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(new InputStreamReader(uc.getInputStream(), "UTF-8"));
+		}catch (Exception e) {
+		}
+		
+		String inputLine;
+		StringBuilder sb = new StringBuilder();
+		try {
+			while((inputLine = in.readLine()) != null) {
+				sb.append(inputLine);
+			}
+			in.close();
+		}catch (Exception e) {
+		}
+		return (JSONObject) JSONValue.parse(in);
+	}*/
 }
