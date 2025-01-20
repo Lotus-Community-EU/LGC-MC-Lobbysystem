@@ -1,7 +1,6 @@
 //Created by Chris Wille at 28.02.2024
 package eu.lotusgc.mc.event;
 
-import java.text.DecimalFormat;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -93,44 +92,40 @@ public class RewardsEvents implements Listener{
 			String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
 			if(itemName.equalsIgnoreCase("§aReward")) {
 				if(ru.dr_canBeRewarded(player, "default")) {
-					double random = ThreadLocalRandom.current().nextDouble(0.5, 65.0);
-					DecimalFormat df = new DecimalFormat("#.##");
+					int random = ThreadLocalRandom.current().nextInt(1, 65);
 					ru.dr_setReward(player, "default");
-					lc.addMoney(player, Double.valueOf(df.format(random)), Money.POCKET);
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.claimed").replace("%type%", "Default Reward").replace("%money%", df.format(random)));
+					lc.addMoney(player, random, Money.POCKET);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.claimed").replace("%type%", "Default Reward").replace("%money%", String.valueOf(random)));
 				}else {
 					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.cooldown").replace("%time%", ru.getRemainingTime(player, "default")));
 				}
 				dr_inv(player);
 			}else if(itemName.equalsIgnoreCase("§aReward §6VIP")) {
 				if(ru.dr_canBeRewarded(player, "vip")) {
-					double random = ThreadLocalRandom.current().nextDouble(65.5, 250.0);
-					DecimalFormat df = new DecimalFormat("#.##");
+					int random = ThreadLocalRandom.current().nextInt(66, 250);
 					ru.dr_setReward(player, "vip");
-					lc.addMoney(player, Double.valueOf(df.format(random)), Money.POCKET);
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.claimed").replace("%type%", "§6VIP§7 Reward").replace("%money%", df.format(random)));
+					lc.addMoney(player, random, Money.POCKET);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.claimed").replace("%type%", "§6VIP§7 Reward").replace("%money%", String.valueOf(random)));
 				}else {
 					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.cooldown").replace("%time%", ru.getRemainingTime(player, "default")));
 				}
 				dr_inv(player);
 			}else if(itemName.equalsIgnoreCase("§aReward §5VIP")) {
 				if(ru.dr_canBeRewarded(player, "vip2")) {
-					double random = ThreadLocalRandom.current().nextDouble(65.5, 500.0);
-					DecimalFormat df = new DecimalFormat("#.##");
+					int random = ThreadLocalRandom.current().nextInt(66, 500);
 					ru.dr_setReward(player, "vip2");
-					lc.addMoney(player, Double.valueOf(df.format(random)), Money.POCKET);
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.claimed").replace("%type%", "§5VIP§7 Reward").replace("%money%", df.format(random)));
+					lc.addMoney(player, random, Money.POCKET);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.claimed").replace("%type%", "§5VIP§7 Reward").replace("%money%", String.valueOf(random)));
 				}else {
 					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.cooldown").replace("%time%", ru.getRemainingTime(player, "default")));
 				}
 				dr_inv(player);
 			}else if(itemName.equalsIgnoreCase("§aReward §cStaff")) {
 				if(ru.dr_canBeRewarded(player, "staff")) {
-					double random = ThreadLocalRandom.current().nextDouble(0.5, 250.0);
-					DecimalFormat df = new DecimalFormat("#.##");
+					int random = ThreadLocalRandom.current().nextInt(1, 250);
 					ru.dr_setReward(player, "staff");
-					lc.addMoney(player, Double.valueOf(df.format(random)), Money.POCKET);
-					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.claimed").replace("%type%", "Staff Reward").replace("%money%", df.format(random)));
+					lc.addMoney(player, random, Money.POCKET);
+					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.claimed").replace("%type%", "Staff Reward").replace("%money%", String.valueOf(random)));
 				}else {
 					player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.cooldown").replace("%time%", ru.getRemainingTime(player, "default")));
 				}
@@ -154,7 +149,7 @@ public class RewardsEvents implements Listener{
 				event.setCancelled(true);
 				dr_inv(player);
 			}
-		}else if(target.getType() == EntityType.SNOWMAN) {
+		}else if(target.getType() == EntityType.SNOW_GOLEM) {
 			if(target.getCustomName().equals(RewardsUtils.r_advents)) {
 				event.setCancelled(true);
 				ac_inv(player);
@@ -172,7 +167,7 @@ public class RewardsEvents implements Listener{
 		if(target.getType() == EntityType.VILLAGER) {
 			event.setCancelled(true);
 			player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.hitmessage").replace("%entityName%", target.getCustomName()));
-		}else if(target.getType() == EntityType.SNOWMAN) {
+		}else if(target.getType() == EntityType.SNOW_GOLEM) {
 			event.setCancelled(true);
 			player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.hitmessage").replace("%entityName%", target.getCustomName()));
 		}
