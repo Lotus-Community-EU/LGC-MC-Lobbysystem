@@ -8,6 +8,7 @@ import java.net.URLConnection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -22,9 +23,12 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import eu.lotusgc.mc.main.Main;
 import eu.lotusgc.mc.misc.HotbarItem;
 import eu.lotusgc.mc.misc.LotusController;
 import eu.lotusgc.mc.misc.MySQL;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.model.user.UserManager;
 
 public class JoinEvent implements Listener{
 	
@@ -34,6 +38,8 @@ public class JoinEvent implements Listener{
 	 * It will be used to lookup, ban, warn, etc. as well as other internal stuff
 	 * The ID can be changed again, but must be unique, too.
 	 */
+	
+	static HashMap<String, String> nameHM = new HashMap<>();
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
@@ -83,17 +89,52 @@ public class JoinEvent implements Listener{
 		try {
 			JsonObject jo = getAPIData(player.getAddress().getHostName());
 			LotusController lc = new LotusController();
-			PreparedStatement ps = MySQL.getConnection().prepareStatement("UPDATE mc_users SET isOnline = ?, name = ?, timeZone = ?, countryCode = ?, currentLastServer = ? WHERE mcuuid = ?");
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("UPDATE mc_users SET isOnline = ?, name = ?, timeZone = ?, countryCode = ?, currentLastServer = ?, playerGroup = ? WHERE mcuuid = ?");
 			ps.setBoolean(1, status);
 			ps.setString(2, player.getName());
 			ps.setString(3, jo.get("timeZone").getAsString().replace("\"", ""));
 			ps.setString(4, jo.get("countryCode").getAsString().replace("\"", ""));
 			ps.setString(5, lc.getServerName());
-			ps.setString(6, player.getUniqueId().toString());
+			ps.setString(6, retGroup(player));
+			ps.setString(7, player.getUniqueId().toString());
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private String retGroup(Player player) {
+		String group = "";
+		UserManager um = Main.luckPerms.getUserManager();
+		User user = um.getUser(player.getName());
+		group = returnPrefix(user.getPrimaryGroup());
+		return group;
+	}
+	
+	public static void initRoles() {
+		try {
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT * FROM core_ranks");
+			ResultSet rs = ps.executeQuery();
+			nameHM.clear();
+			int count = 0;
+			while(rs.next()) {
+				count++;
+				nameHM.put(rs.getString("ingame_id"), rs.getString("name"));
+			}
+			Main.logger.info("Downloaded " + count + " roles for the Roleupdater. | Source: JoinEvent#initRoles();");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private String returnPrefix(String roleId) {
+		String toReturn = "";
+		if(nameHM.containsKey(roleId)) {
+			toReturn = nameHM.get(roleId);
+		}else {
+			toReturn = "Player";
+		}
+		return toReturn;
 	}
 	
 	//retrieve all IDs which are currently given out to players

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -107,15 +106,13 @@ public class TreasureHunt implements Listener {
 						int claims = getClaims(line2);
 						updateClaims(line2, (claims + 1));
 						if(isSpecialSign(event.getClickedBlock().getLocation())) {
-							double random = ThreadLocalRandom.current().nextDouble(25.0, 250.0);
-							DecimalFormat df = new DecimalFormat("#.##");
-							lc.addMoney(player, Double.valueOf(df.format(random)), Money.POCKET);
-							player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.treasurehunt.claimed").replace("%gift%", "§a" + df.format(random) + " §7Coins"));
+							int random = ThreadLocalRandom.current().nextInt(25, 250);
+							lc.addMoney(player, random, Money.POCKET);
+							player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.treasurehunt.claimed").replace("%gift%", "§a" + random + " §7Coins"));
 						}else {
-							double random = ThreadLocalRandom.current().nextDouble(0.5, 15.0);
-							DecimalFormat df = new DecimalFormat("#.##");
-							lc.addMoney(player, Double.valueOf(df.format(random)), Money.POCKET);
-							player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.treasurehunt.claimed").replace("%gift%", "§a" + df.format(random) + " §7Coins"));
+							int random = ThreadLocalRandom.current().nextInt(1, 15);
+							lc.addMoney(player, random, Money.POCKET);
+							player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.treasurehunt.claimed").replace("%gift%", "§a" + random + " §7Coins"));
 						}
 					}
 				}

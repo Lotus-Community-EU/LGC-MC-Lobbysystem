@@ -38,7 +38,7 @@ public class DRS_Command implements CommandExecutor{
 					}
 				}else if(mode.equalsIgnoreCase("advents")) {
 					if(player.hasPermission("lgc.rewards.advents")) {
-						Snowman sman = (Snowman)player.getWorld().spawnEntity(player.getLocation(), EntityType.SNOWMAN);
+						Snowman sman = (Snowman)player.getWorld().spawnEntity(player.getLocation(), EntityType.SNOW_GOLEM);
 						sman.setCustomNameVisible(true);
 						sman.setCustomName(RewardsUtils.r_advents);
 						sman.setDerp(true);
