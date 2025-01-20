@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 
+import eu.lotusgc.mc.command.BankCommands;
 import eu.lotusgc.mc.command.BuildCMD;
 import eu.lotusgc.mc.command.DRS_Command;
 import eu.lotusgc.mc.command.SpawnSystem;
@@ -71,6 +72,11 @@ public class LotusManager {
 		Main.main.getCommand("spawn-admin").setExecutor(new SpawnSystem());
 		Main.main.getCommand("spawn").setExecutor(new SpawnSystem());
 		Main.main.getCommand("rewards").setExecutor(new DRS_Command());
+		Main.main.getCommand("bankwithdraw").setExecutor(new BankCommands());
+		Main.main.getCommand("bankdeposit").setExecutor(new BankCommands());
+		Main.main.getCommand("pay").setExecutor(new BankCommands());
+		Main.main.getCommand("topbal").setExecutor(new BankCommands());
+		Main.main.getCommand("money").setExecutor(new BankCommands());
 		
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new LeaveEvent(), Main.main);
