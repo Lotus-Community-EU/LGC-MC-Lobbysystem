@@ -102,11 +102,11 @@ public class ScoreboardHandler implements Listener{
 				//serverinfo
 				//Will be reworked, as Lobby will have ViaVersion (to support 1.12.2 and latest (current 1.20.4)) - as the Hybrid Servers will be running mcv 1.12.2 - all HX servers will be listed on their own to just see servers where I can actually play on. (Website + Discord Bot will also be a possibility to lookup)
 				try {
-					PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT displayname,currentPlayers,isHiddenGame,isOnline FROM mc_serverstats ORDER BY serverid DESC");
+					PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT displayname,currentPlayers,isHiddenGame,isOnline,isMinigame FROM mc_serverstats ORDER BY serverid DESC");
 					ResultSet rs = ps.executeQuery();
 					int count = 0;
 					while(rs.next()) {
-						if(!rs.getBoolean("isHiddenGame") && rs.getBoolean("isOnline")) {
+						if(!rs.getBoolean("isHiddenGame") && rs.getBoolean("isOnline") && !rs.getBoolean("isMinigame")) {
 							count++;
 							o.getScore("§7» " + rs.getString("displayname") + "§7: §f" + rs.getInt("currentPlayers")).setScore(count);
 						}
