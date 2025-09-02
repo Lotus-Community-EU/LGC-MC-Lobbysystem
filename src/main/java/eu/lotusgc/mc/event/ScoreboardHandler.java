@@ -34,6 +34,7 @@ import eu.lotusgc.mc.command.BuildCMD;
 import eu.lotusgc.mc.main.Main;
 import eu.lotusgc.mc.misc.InputType;
 import eu.lotusgc.mc.misc.LotusController;
+import eu.lotusgc.mc.misc.LotusPlayer;
 import eu.lotusgc.mc.misc.MySQL;
 import eu.lotusgc.mc.misc.Playerdata;
 import eu.lotusgc.mc.misc.Prefix;
@@ -41,6 +42,8 @@ import eu.lotusgc.mc.misc.ServerRestarter;
 import eu.lotusgc.mc.misc.Serverdata;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class ScoreboardHandler implements Listener{
 	
@@ -336,6 +339,8 @@ public class ScoreboardHandler implements Listener{
 		CHAT,
 		TEAM
 	}
+
+	static HashMap<Player, String> trackMap = new HashMap<>();
 	
 	public void startScheduler(int delay, int sideboardRefresh, int tabRefresh) {
 		//SYNC TASK - ONLY FOR THE SIDEBOARD
@@ -344,6 +349,22 @@ public class ScoreboardHandler implements Listener{
 			public void run() {
 				for(Player all : Bukkit.getOnlinePlayers()) {
 					setScoreboard(all);
+
+					LotusPlayer lp = new LotusPlayer(all);
+					if(lp.hasConnectedSpotify()){
+						String track = lp.getSpotifyTrack();
+						String artist = lp.getSpotifyArtist();
+						if(trackMap.containsKey(all)){
+							String oldTrack = trackMap.get(all);
+							if(!oldTrack.equalsIgnoreCase(track)){
+								trackMap.put(all, track);
+								all.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy("§aNow playing: §6" + track + " §7by§6 " + artist));
+							}
+						}else {
+							trackMap.put(all, track);
+							all.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy("§aNow playing: §6" + track + " §7by§6 " + artist));
+						}
+					}
 				}
 			}
 		}.runTaskTimer(Main.main, delay, sideboardRefresh);
