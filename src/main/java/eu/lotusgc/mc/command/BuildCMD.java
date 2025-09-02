@@ -122,6 +122,7 @@ public class BuildCMD implements CommandExecutor, Listener{
 		exempted.add(Material.DARK_OAK_PRESSURE_PLATE);
 		exempted.add(Material.ACACIA_PRESSURE_PLATE);
 		exempted.add(Material.BAMBOO_PRESSURE_PLATE);
+		exempted.add(Material.STONE_PRESSURE_PLATE);
 		if(event.getAction() == Action.PHYSICAL) {
 			if(!exempted.contains(event.getClickedBlock().getType())) {
 				event.setCancelled(true);
