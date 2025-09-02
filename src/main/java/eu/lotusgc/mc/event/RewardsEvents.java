@@ -165,11 +165,19 @@ public class RewardsEvents implements Listener{
 		LotusController lc = new LotusController();
 		if(hitter.getType() == EntityType.PLAYER) player = (Player)hitter;
 		if(target.getType() == EntityType.VILLAGER) {
-			event.setCancelled(true);
-			player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.hitmessage").replace("%entityName%", target.getCustomName()));
+			if(target.getCustomName() != null && target.getCustomName().equals(RewardsUtils.r_daily)) {
+				event.setCancelled(true);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.hitmessage").replace("%entityName%", target.getCustomName()));
+			}else {
+				event.setCancelled(false);
+			}
 		}else if(target.getType() == EntityType.SNOW_GOLEM) {
-			event.setCancelled(true);
-			player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.hitmessage").replace("%entityName%", target.getCustomName()));
+			if(target.getCustomName() != null && target.getCustomName().equals(RewardsUtils.r_advents)) {
+				event.setCancelled(true);
+				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.rewards.daily.hitmessage").replace("%entityName%", target.getCustomName()));
+			}else {
+				event.setCancelled(false);
+			}
 		}
 	}
 }
