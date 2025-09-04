@@ -18,7 +18,7 @@ public class LeaveEvent implements Listener{
 		Player player = event.getPlayer();
 		updateOnlineStatus(player.getUniqueId(), false);
 		
-		event.setQuitMessage(null);
+		event.setQuitMessage("§8[§c-§8] §7" + player.getDisplayName());
 		
 	}
 	
