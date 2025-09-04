@@ -63,7 +63,6 @@ public class JoinEvent implements Listener{
 		player.setHealth(20.0);
 		player.setFoodLevel(20);
 		player.setWalkSpeed((float) 0.2);
-		event.setJoinMessage(null);
 	}
 	
 	//checks wether the player already exists or not
