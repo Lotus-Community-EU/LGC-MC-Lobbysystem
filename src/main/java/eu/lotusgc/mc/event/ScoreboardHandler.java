@@ -42,8 +42,6 @@ import eu.lotusgc.mc.misc.ServerRestarter;
 import eu.lotusgc.mc.misc.Serverdata;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 
 public class ScoreboardHandler implements Listener {
 

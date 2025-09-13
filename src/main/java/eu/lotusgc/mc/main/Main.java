@@ -31,6 +31,7 @@ public class Main extends JavaPlugin{
 	
 	public void onDisable() {
 		main = null;
+		Bukkit.getMessenger().unregisterOutgoingPluginChannel(this);
 		SyncServerdata.setOnlineStatus(false);
 		MySQL.disconnect();
 	}

@@ -249,12 +249,13 @@ public class InventorySetterHandling implements Listener{
 		LotusController lc = new LotusController();
 		int slot = 0;
 		String playerLang = lc.getPlayerData(player, Playerdata.Language);
-		for(String string : lc.getAvailableLanguages()) {
-			String fancyName = langs.getOrDefault(string, "Error!");
-			if(string.equalsIgnoreCase(playerLang)) {
-				mainInventory.setItem(slot, lc.loreItem(Material.NETHER_STAR, 1, "§6" + fancyName, "§7Language is:", "§7» §a" + string));
+		for(Map.Entry<String, String> lang : LotusController.availableLanguages.entrySet()) {
+			String shortName = lang.getKey();
+			String fullName = lang.getValue();
+			if(shortName.equalsIgnoreCase(playerLang)) {
+				mainInventory.setItem(slot, lc.loreItem(Material.GREEN_CONCRETE_POWDER, 1, "§6" + shortName, "§7Language is:", "§7» §a" + fullName));
 			}else {
-				mainInventory.setItem(slot, lc.defItemRandom(matList(), "§a" + fancyName, 1, "§7Language is:", "§7» §a" + string));
+				mainInventory.setItem(slot, lc.defItemRandom(matList(), "§a" + shortName, 1, "§7Language is:", "§7» §a" + fullName));
 			}
 			slot++;
 		}
@@ -587,8 +588,7 @@ public class InventorySetterHandling implements Listener{
 			LotusController lc = new LotusController();
 			if(event.getCurrentItem() == null && event.getCurrentItem().getItemMeta() == null) return;
 			String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
-			itemName = ChatColor.stripColor(event.getCurrentItem().getItemMeta().getLore().get(1)).substring(2);
-			if(findAndUpdatePlayerLanguage(player, itemName)) {
+			if(findAndUpdatePlayerLanguage(player, ChatColor.stripColor(itemName))) {
 				//Updated language to %language% successfully!
 				player.sendMessage(lc.getPrefix(Prefix.MAIN) + lc.sendMessageToFormat(player, "event.languageInventory.success").replace("%language%", itemName));
 			}else {
@@ -969,7 +969,6 @@ public class InventorySetterHandling implements Listener{
 	}
 	
 	private static HashMap<String, String> servers = new HashMap<>();
-	private static HashMap<String, String> langs = new HashMap<>();
 	
 	public static void loadServer() {
 		try {
@@ -981,24 +980,11 @@ public class InventorySetterHandling implements Listener{
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		try {
-			LotusController lc = new LotusController();
-			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT * FROM core_translations WHERE path = ?");
-			ps.setString(1, "mcinternal.language");
-			ResultSet rs = ps.executeQuery();
-			if(rs.next()) {
-				for(String string : lc.getAvailableLanguages()) {
-					langs.put(string, rs.getString(string));
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	private boolean findAndUpdatePlayerLanguage(Player player, String newLanguage) {
 		boolean success = false;
-		if(langs.containsKey(newLanguage)) {
+		if(LotusController.availableLanguages.containsKey(newLanguage)) {
 			LotusController.playerLanguages.put(player.getUniqueId().toString(), newLanguage);
 			try {
 				PreparedStatement ps = MySQL.getConnection().prepareStatement("UPDATE mc_users SET language = ? WHERE mcuuid = ?");
