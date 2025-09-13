@@ -63,6 +63,28 @@ public class JoinEvent implements Listener{
 		player.setHealth(20.0);
 		player.setFoodLevel(20);
 		player.setWalkSpeed((float) 0.2);
+
+		//updating the cache for the user lang
+		String lang = getPlayerLanguage(player.getUniqueId());
+		LotusController.playerLanguages.put(player.getUniqueId().toString(), lang);
+	}
+
+	//gets the player's language from db
+	private String getPlayerLanguage(UUID uuid) {
+		String lang = "en";
+		try {
+			PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT language FROM mc_users WHERE mcuuid = ?");
+			ps.setString(1, uuid.toString());
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				lang = rs.getString("language");
+			}
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return lang;
 	}
 	
 	//checks wether the player already exists or not
@@ -211,34 +233,4 @@ public class JoinEvent implements Listener{
 		JsonObject jo = (JsonObject) parser.parse(lortu);
 		return jo;
 	}
-	
-	/*private JSONObject getAPIData(String ip) {
-		String uri = "http://api.ipinfodb.com/v3/ip-city/?key=d7859a91e5346872d0378a2674821fbd60bc07ed63684c3286c083198f024138&ip=" + ip + "&format=json";
-		URL url = null;
-		try {
-			url = new URL(uri);
-		}catch (MalformedURLException e) {
-		}
-		URLConnection uc = null;
-		try {
-			uc = url.openConnection();
-		} catch (IOException e) {
-		}
-		BufferedReader in = null;
-		try {
-			in = new BufferedReader(new InputStreamReader(uc.getInputStream(), "UTF-8"));
-		}catch (Exception e) {
-		}
-		
-		String inputLine;
-		StringBuilder sb = new StringBuilder();
-		try {
-			while((inputLine = in.readLine()) != null) {
-				sb.append(inputLine);
-			}
-			in.close();
-		}catch (Exception e) {
-		}
-		return (JSONObject) JSONValue.parse(in);
-	}*/
 }
