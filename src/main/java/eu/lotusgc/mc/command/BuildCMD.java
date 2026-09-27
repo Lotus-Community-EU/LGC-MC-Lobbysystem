@@ -1,7 +1,9 @@
 package eu.lotusgc.mc.command;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -22,10 +24,12 @@ import eu.lotusgc.mc.event.ScoreboardHandler;
 import eu.lotusgc.mc.main.Main;
 import eu.lotusgc.mc.misc.HotbarItem;
 import eu.lotusgc.mc.misc.LotusController;
+import eu.lotusgc.mc.misc.PlayerBuildData;
 
 public class BuildCMD implements CommandExecutor, Listener{
 	
 	private static List<Player> allowedPlayers = new ArrayList<>();
+	private static final Map<Player, PlayerBuildData> playerBuildData = new HashMap<>();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -68,8 +72,10 @@ public class BuildCMD implements CommandExecutor, Listener{
 						}
 						player.setGameMode(GameMode.SURVIVAL);
 						new HotbarItem().setHotbarItems(player);
+						playerBuildData.remove(player);
 					}else {
 						allowedPlayers.add(player);
+						playerBuildData.put(player, new PlayerBuildData());
 						lc.sendMessageReady(player, "cmd.build.self.add");
 						ScoreboardHandler.buildTime.put(player, System.currentTimeMillis() / 1000);
 						player.setGameMode(GameMode.CREATIVE);
@@ -94,6 +100,9 @@ public class BuildCMD implements CommandExecutor, Listener{
 		Player player = event.getPlayer();
 		if(allowedPlayers.contains(player)) {
 			event.setCancelled(false);
+			if(playerBuildData.containsKey(player)) {
+				playerBuildData.get(player).incrementBrokenBlocks();
+			}
 		}else {
 			event.setCancelled(true);
 			new LotusController().sendMessageReady(player, "event.build.blockpb.cantDoThat");
@@ -105,6 +114,9 @@ public class BuildCMD implements CommandExecutor, Listener{
 		Player player = event.getPlayer();
 		if(allowedPlayers.contains(player)) {
 			event.setCancelled(false);
+			if(playerBuildData.containsKey(player)) {
+				playerBuildData.get(player).incrementPlacedBlocks();
+			}
 		}else {
 			event.setCancelled(true);
 			new LotusController().sendMessageReady(player, "event.build.blockpb.cantDoThat");
@@ -136,5 +148,15 @@ public class BuildCMD implements CommandExecutor, Listener{
 		if(allowedPlayers.contains(event.getPlayer())) {
 			allowedPlayers.remove(event.getPlayer());
 		}
+		if(playerBuildData.containsKey(event.getPlayer())) {
+			playerBuildData.remove(event.getPlayer());
+		}
 	}
+
+    public static PlayerBuildData getPlayerBuildData(Player player) {
+        if(playerBuildData.containsKey(player)) {
+            return playerBuildData.get(player);
+        }
+        return null;
+    }
 }
