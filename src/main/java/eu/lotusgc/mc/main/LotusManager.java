@@ -13,9 +13,11 @@ import org.bukkit.plugin.PluginManager;
 
 import eu.lotusgc.mc.command.BankCommands;
 import eu.lotusgc.mc.command.BuildCMD;
+import eu.lotusgc.mc.command.ChestPointer;
 import eu.lotusgc.mc.command.DRS_Command;
 import eu.lotusgc.mc.command.SpawnSystem;
 import eu.lotusgc.mc.event.ColorSigns;
+import eu.lotusgc.mc.event.CratesHandler;
 import eu.lotusgc.mc.event.EffectMoveEvent;
 import eu.lotusgc.mc.event.EventBlocker;
 import eu.lotusgc.mc.event.InventorySetterHandling;
@@ -82,6 +84,7 @@ public class LotusManager {
 		Main.main.getCommand("pay").setExecutor(new BankCommands());
 		Main.main.getCommand("topbal").setExecutor(new BankCommands());
 		Main.main.getCommand("money").setExecutor(new BankCommands());
+		Main.main.getCommand("setcrateschest").setExecutor(new ChestPointer());
 		
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new LeaveEvent(), Main.main);
@@ -95,6 +98,8 @@ public class LotusManager {
 		pm.registerEvents(new TreasureHunt(), Main.main);
 		pm.registerEvents(new RewardsEvents(), Main.main);
 		pm.registerEvents(new EffectMoveEvent(), Main.main);
+		pm.registerEvents(new ChestPointer(), Main.main);
+		pm.registerEvents(new CratesHandler(), Main.main);
 		
 		Bukkit.getConsoleSender().sendMessage("§aMain-Initialisation took §6" + (System.currentTimeMillis() - current) + "§ams");
 	}

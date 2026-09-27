@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,6 +33,7 @@ import eu.lotusgc.mc.command.SpawnSystem;
 import eu.lotusgc.mc.main.Main;
 import eu.lotusgc.mc.misc.ChatbridgeEnums;
 import eu.lotusgc.mc.misc.ChatbridgeUtils;
+import eu.lotusgc.mc.misc.Gifts;
 import eu.lotusgc.mc.misc.HotbarItem;
 import eu.lotusgc.mc.misc.InputType;
 import eu.lotusgc.mc.misc.LotusController;
@@ -61,7 +63,7 @@ public class InventorySetterHandling implements Listener{
 	public static String extras_sboost = "§bSpeedboost";
 	
 	public static String rewards_title = "§bRewards";
-	public static String rewards_crates = "§eCrates §4(CLOSED)";
+	public static String rewards_chest = "§dReward Chest";
 	public static String rewards_dailyRewards = "§aDaily Rewards";
 	
 	public static String sboost_title = "§bSpeedboost";
@@ -239,7 +241,8 @@ public class InventorySetterHandling implements Listener{
 		for(int i = 0; i < 9; i++) {
 			mainInventory.setItem(i, lc.defItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE, "§0", 1));
 		}
-		mainInventory.setItem(3, lc.defItem(Material.AMETHYST_SHARD, rewards_crates, 1));
+		
+		mainInventory.setItem(3, lc.defItem(Material.CHEST, rewards_chest, 1));
 		mainInventory.setItem(5, lc.defItem(Material.DIAMOND, rewards_dailyRewards, 1));
 		player.openInventory(mainInventory);
 	}
@@ -525,7 +528,7 @@ public class InventorySetterHandling implements Listener{
 			if(itemName.equalsIgnoreCase(rewards_dailyRewards)) {
 				Location loc = SpawnSystem.getSpawn("dailyRewards");
 				player.teleport(loc);
-			}else if(itemName.equalsIgnoreCase(rewards_crates)) {
+			}else if(itemName.equalsIgnoreCase(rewards_chest)) {
 				Location loc = SpawnSystem.getSpawn("crates");
 				player.teleport(loc);
 			}
@@ -1063,6 +1066,4 @@ public class InventorySetterHandling implements Listener{
 			e.printStackTrace();
 		}
 	}
-	
-	
 }
