@@ -18,8 +18,8 @@
 	
 	<developers>
 		<developer>
-			<id>ChrisWille2856</id>
-			<name>Christopher Wilhelm H.</name>
+			<id>MauriceLPs</id>
+			<name>Maurice Alexander H.</name>
 			<email>info@kitsoft.at</email>
 		</developer>
 		<developer>
@@ -52,7 +52,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.21.4-R0.1-SNAPSHOT</version>
+            <version>1.21.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
