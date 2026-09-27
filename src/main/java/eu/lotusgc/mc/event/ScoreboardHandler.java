@@ -36,6 +36,7 @@ import eu.lotusgc.mc.misc.InputType;
 import eu.lotusgc.mc.misc.LotusController;
 import eu.lotusgc.mc.misc.LotusPlayer;
 import eu.lotusgc.mc.misc.MySQL;
+import eu.lotusgc.mc.misc.PlayerBuildData;
 import eu.lotusgc.mc.misc.Playerdata;
 import eu.lotusgc.mc.misc.Prefix;
 import eu.lotusgc.mc.misc.ServerRestarter;
@@ -73,9 +74,18 @@ public class ScoreboardHandler implements Listener {
 			ItemStack mainHandItem = player.getInventory().getItemInMainHand();
 			ItemStack offHandItem = player.getInventory().getItemInOffHand();
 			o.setDisplayName("§bBuild Statistics");
-			o.getScore(lc.sendMessageToFormat(player, "event.scoreboard.build.usedTime")).setScore(6);
-			o.getScore("§7» §a" + getBuildTime(player)).setScore(5);
-			o.getScore("§0").setScore(4);
+			o.getScore(lc.sendMessageToFormat(player, "event.scoreboard.build.usedTime")).setScore(10);
+			o.getScore("§7» §a" + getBuildTime(player)).setScore(9);
+			o.getScore("§0").setScore(8);
+			PlayerBuildData pbd = BuildCMD.getPlayerBuildData(player);
+			if(pbd.getBrokenBlocks() != 0) {
+				o.getScore(lc.sendMessageToFormat(player, "event.scoreboard.build.brokenBlocks")).setScore(7);
+				o.getScore("§7» §a" + pbd.getBrokenBlocks()).setScore(6);
+			}
+			if(pbd.getPlacedBlocks() != 0) {
+				o.getScore(lc.sendMessageToFormat(player, "event.scoreboard.build.placedBlocks")).setScore(5);
+				o.getScore("§7» §a" + pbd.getPlacedBlocks()).setScore(4);
+			}
 			if (!mainHandItem.getType().toString().equalsIgnoreCase("air")) {
 				o.getScore(lc.sendMessageToFormat(player, "event.scoreboard.build.block") + "§6").setScore(3);
 				o.getScore("§7» §a" + mainHandItem.getType().toString()).setScore(2);
